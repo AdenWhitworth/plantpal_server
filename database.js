@@ -9,6 +9,30 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE
 }).promise();
 
+
+export async function getUser(email){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM users
+        WHERE Lower(email) = ?
+    `, [email]);
+    return rows[0];
+}
+
+export async function createUser(name, email, password){
+    const [result] = await pool.query(`
+        INSERT INTO users (name, email, password)
+        VALUES(?, ?, ?)
+    `, [name, email, password]);
+
+    const id = result.insertId;
+
+    return getUser(email);
+}
+
+
+
+/* Example Notes Functions 
 export async function getNotes() {
     const [rows] = await pool.query("SELECT * FROM notes");
     return rows;
@@ -23,12 +47,6 @@ export async function getNote(id){
     return rows[0];
 }
 
-/*
-const notes = await getNote(1);
-console.log(notes);
-*/
-
-
 export async function createNote(title, contents){
     const [result] = await pool.query(`
         INSERT INTO notes (title, contents)
@@ -40,7 +58,4 @@ export async function createNote(title, contents){
     return getNote(id);
 }
 
-/*
-const newNote = await createNote('test','test');
-console.log(newNote);
 */
