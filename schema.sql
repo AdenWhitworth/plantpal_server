@@ -27,3 +27,7 @@ CREATE TABLE users (
   PRIMARY KEY (id),
   UNIQUE KEY email (email)
  ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+ALTER TABLE users
+ADD last_login DATETIME(0);

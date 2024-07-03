@@ -9,8 +9,12 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE
 }).promise();
 
+export async function getUsers() {
+    const [rows] = await pool.query("SELECT * FROM users");
+    return rows;
+}
 
-export async function getUser(email){
+export async function getUserByEmail(email){
     const [rows] = await pool.query(`
         SELECT *
         FROM users
@@ -19,43 +23,32 @@ export async function getUser(email){
     return rows[0];
 }
 
-export async function createUser(name, email, password){
-    const [result] = await pool.query(`
-        INSERT INTO users (name, email, password)
-        VALUES(?, ?, ?)
-    `, [name, email, password]);
-
-    const id = result.insertId;
-
-    return getUser(email);
-}
-
-
-
-/* Example Notes Functions 
-export async function getNotes() {
-    const [rows] = await pool.query("SELECT * FROM notes");
-    return rows;
-}
-
-export async function getNote(id){
+export async function getUserById(id){
     const [rows] = await pool.query(`
         SELECT *
-        FROM notes
+        FROM users
         WHERE id = ?
     `, [id]);
     return rows[0];
 }
 
-export async function createNote(title, contents){
+export async function createUser(name, email, password){
     const [result] = await pool.query(`
-        INSERT INTO notes (title, contents)
-        VALUES(?, ?)
-    `, [title,contents]);
+        INSERT INTO users (name, email, password,last_login)
+        VALUES(?, ?, ?, NULL)
+    `, [name, email, password]);
 
     const id = result.insertId;
-
-    return getNote(id);
+    return getUserById(id);
 }
 
-*/
+export async function updateLastLoginTime(id){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET last_login = now()
+        WHERE id = ?
+    `, [id]);
+    
+    return getUserById(id);
+
+}
