@@ -41,8 +41,6 @@ router.post('/register', signupValidation, async (req, res, next) => {
             
         const newUser = await createUser(name, email, hashPassword);
 
-        console.log(newUser);
-
         if (newUser == null){
             return res.status(400).send({
                 msg: 'Error creating new user'
