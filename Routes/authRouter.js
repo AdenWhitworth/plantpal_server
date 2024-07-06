@@ -1,9 +1,9 @@
 import express from 'express';
-const router = express.Router();
+const authRouter = express.Router();
 import { check } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getUsers, createUser, getUserByEmail, getUserById, updateLastLoginTime } from './database.js';
+import { getUsers, createUser, getUserByEmail, getUserById, updateLastLoginTime } from '../database.js';
 
 const signupValidation = [
     check('first_name', 'First name is requied').not().isEmpty(),
@@ -21,7 +21,7 @@ const fetchValidation = [
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: true }),
 ];
 
-router.post('/register', signupValidation, async (req, res, next) => {
+authRouter.post('/register', signupValidation, async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password
     const firt_name = req.body.first_name;
@@ -57,7 +57,7 @@ router.post('/register', signupValidation, async (req, res, next) => {
     
 });
 
-router.post('/login', loginValidation, async (req, res, next) => {
+authRouter.post('/login', loginValidation, async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password
     const user = await getUserByEmail(email);
@@ -102,7 +102,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
     });     
 });
 
-router.get('/getUser', fetchValidation, async (req, res, next) => {
+authRouter.get('/getUser', fetchValidation, async (req, res, next) => {
     
     if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
         return res.status(422).json({
@@ -132,4 +132,4 @@ router.get('/getUser', fetchValidation, async (req, res, next) => {
     });
 });
 
-export {router};
+export {authRouter};
