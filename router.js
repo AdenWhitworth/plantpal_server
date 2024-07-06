@@ -101,8 +101,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
     });     
 });
 
-router.post('/getUser', fetchValidation, async (req, res, next) => {
-    const email = req.body.email;
+router.get('/getUser', fetchValidation, async (req, res, next) => {
     
     if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
         return res.status(422).json({
