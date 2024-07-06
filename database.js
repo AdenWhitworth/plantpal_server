@@ -32,11 +32,11 @@ export async function getUserById(id){
     return rows[0];
 }
 
-export async function createUser(name, email, password){
+export async function createUser(first_name, last_name, email, password){
     const [result] = await pool.query(`
-        INSERT INTO users (name, email, password,last_login)
-        VALUES(?, ?, ?, NULL)
-    `, [name, email, password]);
+        INSERT INTO users (first_name, last_name, email, password, last_login)
+        VALUES(?, ?, ?, ?, NULL)
+    `, [first_name, last_name, email, password]);
 
     const id = result.insertId;
     return getUserById(id);

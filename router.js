@@ -6,7 +6,8 @@ import jwt from 'jsonwebtoken';
 import { getUsers, createUser, getUserByEmail, getUserById, updateLastLoginTime } from './database.js';
 
 const signupValidation = [
-    check('name', 'Name is requied').not().isEmpty(),
+    check('first_name', 'First name is requied').not().isEmpty(),
+    check('last_name', 'Last name is requied').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: true }),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 })
 ];
@@ -23,7 +24,8 @@ const fetchValidation = [
 router.post('/register', signupValidation, async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password
-    const name = req.body.name;
+    const firt_name = req.body.first_name;
+    const last_name = req.body.last_name;
     const users = await getUserByEmail(email);
     
     if (users != null){
@@ -39,7 +41,7 @@ router.post('/register', signupValidation, async (req, res, next) => {
             });
         } 
             
-        const newUser = await createUser(name, email, hashPassword);
+        const newUser = await createUser(firt_name, last_name, email, hashPassword);
 
         if (newUser == null){
             return res.status(400).send({
@@ -63,14 +65,14 @@ router.post('/login', loginValidation, async (req, res, next) => {
 
     if (user == null){
         return res.status(409).send({
-            msg: 'Email or password is incorrect! 4'
+            msg: 'Email or password is incorrect!'
         });
     }
 
     bcrypt.compare(password, user.password, async (bErr, bResult) => {
         if (bErr) {
             return res.status(401).send({
-                msg: 'Email or password is incorrect! 1'
+                msg: 'Email or password is incorrect!'
             });
         }
 
@@ -81,7 +83,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
             
             if (updatedUser == null){
                 return res.status(401).send({
-                    msg: 'Email or password is incorrect! 2'
+                    msg: 'Email or password is incorrect!'
                 });
             }
 
@@ -94,7 +96,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
         }
 
         return res.status(401).send({
-            msg: 'Username or password is incorrect! 3'
+            msg: 'Username or password is incorrect!'
         });
     });     
 });

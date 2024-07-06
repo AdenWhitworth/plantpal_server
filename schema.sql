@@ -20,14 +20,38 @@ VALUES
 CREATE DATABASE plantpal_app;
 USE plantpal_app
 CREATE TABLE users (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  name varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  email varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  password varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY email (email)
- ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  user_id int(11) NOT NULL AUTO_INCREMENT,
+  first_name varchar(50) NOT NULL,
+  last_name varchar(50) NOT NULL,
+  email varchar(50) NOT NULL,
+  password varchar(200) NOT NULL,
+  last_login DATETIME(0), 
+  PRIMARY KEY (user_id),
+  UNIQUE KEY (email)
+ ) ENGINE=InnoDB;
 
+USE plantpal_app
+CREATE TABLE devices (
+  device_id int(11) NOT NULL AUTO_INCREMENT,
+  cat_num varchar(50) NOT NULL,
+  user_id int(11) NOT NULL,
+  wifi_ssid varchar(50) NOT NULL,
+  wifi_password varchar(200) NOT NULL,
+  connection_status BOOLEAN NOT NULL,
+  automate BOOLEAN NOT NULL,
+  location varchar(50) NOT NULL,
+  PRIMARY KEY (device_id),
+  UNIQUE KEY (cat_num),
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+ ) ENGINE=InnoDB;
 
-ALTER TABLE users
-ADD last_login DATETIME(0);
+USE plantpal_app
+CREATE TABLE deviceLogs (
+  log_id int(11) NOT NULL AUTO_INCREMENT,
+  cat_num varchar(50) NOT NULL,
+  soil_temp FLOAT NOT NULL,
+  soil_cap int(11) NOT NULL,
+  log_date DATETIME(0),
+  PRIMARY KEY (log_id),
+  FOREIGN KEY (cat_num) REFERENCES devices(cat_num)
+ ) ENGINE=InnoDB;
