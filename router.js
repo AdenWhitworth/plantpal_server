@@ -61,13 +61,14 @@ router.post('/login', loginValidation, async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password
     const user = await getUserByEmail(email);
-    const id = user.id;
-
+    
     if (user == null){
         return res.status(409).send({
             msg: 'Email or password is incorrect!'
         });
     }
+
+    const user_id = user.user_id;
 
     bcrypt.compare(password, user.password, async (bErr, bResult) => {
         if (bErr) {
@@ -77,9 +78,9 @@ router.post('/login', loginValidation, async (req, res, next) => {
         }
 
         if (bResult) {
-            const token = jwt.sign({id: id},'the-super-strong-secrect', { expiresIn: '1h' });
+            const token = jwt.sign({user_id: user_id},'the-super-strong-secrect', { expiresIn: '1h' });
             
-            const updatedUser = await updateLastLoginTime(id);
+            const updatedUser = await updateLastLoginTime(user_id);
             
             if (updatedUser == null){
                 return res.status(401).send({
@@ -118,7 +119,7 @@ router.get('/getUser', fetchValidation, async (req, res, next) => {
             });
         }
 
-        const user = await getUserById(authorizedData.id);
+        const user = await getUserById(authorizedData.user_id);
 
         if (user == null){
             return res.status(401).send(

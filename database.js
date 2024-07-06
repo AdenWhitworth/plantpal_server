@@ -23,12 +23,12 @@ export async function getUserByEmail(email){
     return rows[0];
 }
 
-export async function getUserById(id){
+export async function getUserById(user_id){
     const [rows] = await pool.query(`
         SELECT *
         FROM users
-        WHERE id = ?
-    `, [id]);
+        WHERE user_id = ?
+    `, [user_id]);
     return rows[0];
 }
 
@@ -37,18 +37,18 @@ export async function createUser(first_name, last_name, email, password){
         INSERT INTO users (first_name, last_name, email, password, last_login)
         VALUES(?, ?, ?, ?, NULL)
     `, [first_name, last_name, email, password]);
-
-    const id = result.insertId;
-    return getUserById(id);
+    
+    const user_id = result.insertId;
+    return getUserById(user_id);
 }
 
-export async function updateLastLoginTime(id){
+export async function updateLastLoginTime(user_id){
     const [result] = await pool.query(`
         UPDATE users
         SET last_login = now()
-        WHERE id = ?
-    `, [id]);
+        WHERE user_id = ?
+    `, [user_id]);
     
-    return getUserById(id);
+    return getUserById(user_id);
 
 }
