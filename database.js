@@ -50,5 +50,72 @@ export async function updateLastLoginTime(user_id){
     `, [user_id]);
     
     return getUserById(user_id);
-
 }
+
+export async function getUserDevices(user_id){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM devices
+        WHERE user_id = ?
+    `, [user_id]);
+    return rows;
+}
+
+export async function getUserDevice(device_id){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM devices
+        WHERE device_id = ?
+    `, [device_id]);
+    return rows[0];
+}
+
+export async function addUserDevice(cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location){
+    const [result] = await pool.query(`
+        INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
+        VALUES(?, ?, ?, ?, ?, ?, ?)
+    `, [cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location]);
+    
+    const device_id = result.insertId;
+    return getUserDevice(device_id);
+}
+
+export async function updateDeviceWifi(device_id, wifi_ssid, wifi_password){
+    const [result] = await pool.query(`
+        UPDATE devices
+        SET wifi_ssid = ?, wifi_password = ?
+        WHERE device_id = ?
+    `, [wifi_ssid, wifi_password, device_id]);
+    
+    return getUserDevice(device_id);
+}
+
+export async function getFactoryDevice(cat_num){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM factorDevices
+        WHERE cat_num = ?
+    `, [cat_num]);
+    return rows[0];
+}
+
+export async function getDeviceLogs(cat_num){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM deviceLogs
+        WHERE cat_num = ?
+    `, [cat_num]);
+    return rows;
+}
+
+export async function getLastDeviceLog(cat_num){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM deviceLogs
+        WHERE cat_num = ?
+        ORDER  BY log_date DESC
+        LIMIT  1
+    `, [cat_num]);
+    return rows[0];
+}
+

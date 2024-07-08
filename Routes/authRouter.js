@@ -59,7 +59,7 @@ authRouter.post('/register', signupValidation, async (req, res, next) => {
 
 authRouter.post('/login', loginValidation, async (req, res, next) => {
     const email = req.body.email;
-    const password = req.body.password
+    const password = req.body.password;
     const user = await getUserByEmail(email);
     
     if (user == null){
