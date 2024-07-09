@@ -4,7 +4,7 @@ import { check } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto.js';
 import jwt from 'jsonwebtoken';
 
-import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice } from '../database.js';
+import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi } from '../database.js';
 
 const deviceValidation = [
     check('cat_num', 'Catalog number is requied').not().isEmpty()
@@ -106,7 +106,6 @@ dashboardRouter.post('/addDevice', async (req, res, next) => {
 
         const hashWifi = encrypt(wifi_password);
 
-
         const newDevice = await addUserDevice(cat_num, user_id, wifi_ssid, hashWifi.content, hashWifi.iv, false, false, location);
 
         if (newDevice == null){
@@ -119,6 +118,48 @@ dashboardRouter.post('/addDevice', async (req, res, next) => {
             });
         }
         
+    });
+
+});
+
+dashboardRouter.post('/updateWifi', async (req, res, next) => {
+    
+    const device_id = req.body.device_id;
+    const wifi_ssid = req.body.wifi_ssid;
+    const wifi_password = req.body.wifi_password;
+
+    if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
+        return res.status(422).json({
+            message: "Please provide the token",
+        });
+    }
+
+    const theToken = req.headers.authorization.split(' ')[1];
+
+    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+        if (err){
+            return res.status(422).json({
+                message: "Please provide the token",
+            });
+        }
+
+        const hashWifi = encrypt(wifi_password);
+        
+        const updatedDevice = await updateDeviceWifi(device_id, wifi_ssid, hashWifi.content, hashWifi.iv);
+
+        if (updatedDevice == null){
+            return res.status(400).send({
+                msg: 'Error updating device network'
+            });
+        } else if (updatedDevice.wifi_password != hashWifi.content) {
+            return res.status(400).send({
+                msg: 'Error updating device network'
+            });
+        } else {
+            return res.status(201).send({
+                msg: 'The device network has been updated!'
+            });
+        }
     });
 
 });

@@ -80,12 +80,12 @@ export async function addUserDevice(cat_num, user_id, wifi_ssid, wifi_password, 
     return getUserDevice(device_id);
 }
 
-export async function updateDeviceWifi(device_id, wifi_ssid, wifi_password){
+export async function updateDeviceWifi(device_id, wifi_ssid, wifi_password, init_vec){
     const [result] = await pool.query(`
         UPDATE devices
-        SET wifi_ssid = ?, wifi_password = ?
+        SET wifi_ssid = ?, wifi_password = ?, init_vec=?
         WHERE device_id = ?
-    `, [wifi_ssid, wifi_password, device_id]);
+    `, [wifi_ssid, wifi_password, init_vec, device_id]);
     
     return getUserDevice(device_id);
 }
