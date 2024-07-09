@@ -70,11 +70,11 @@ export async function getUserDevice(device_id){
     return rows[0];
 }
 
-export async function addUserDevice(cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location){
+export async function addUserDevice(cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location){
     const [result] = await pool.query(`
-        INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
-        VALUES(?, ?, ?, ?, ?, ?, ?)
-    `, [cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location]);
+        INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+    `, [cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location]);
     
     const device_id = result.insertId;
     return getUserDevice(device_id);
