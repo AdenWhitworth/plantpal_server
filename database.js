@@ -93,7 +93,7 @@ export async function updateDeviceWifi(device_id, wifi_ssid, wifi_password){
 export async function getFactoryDevice(cat_num){
     const [rows] = await pool.query(`
         SELECT *
-        FROM factorDevices
+        FROM factoryDevices
         WHERE cat_num = ?
     `, [cat_num]);
     return rows[0];

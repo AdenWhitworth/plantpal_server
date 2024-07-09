@@ -48,7 +48,7 @@ CREATE TABLE devices (
  ) ENGINE=InnoDB;
 
 INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
-VALUES("A1B2C3", 1, "test", "password", false, false, "kitchen");
+VALUES("A1B2C3", 1, "testssid", "testpassword", false, false, "kitchen");
 
 INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
 VALUES("A2B3C4", 1, "test", "password", false, false, "livingroom");

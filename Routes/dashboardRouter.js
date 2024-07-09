@@ -4,7 +4,7 @@ import { check } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto.js';
 import jwt from 'jsonwebtoken';
 
-import { getUserDevices, getDeviceLogs, getLastDeviceLog } from '../database.js';
+import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice } from '../database.js';
 
 const deviceValidation = [
     check('cat_num', 'Catalog number is requied').not().isEmpty()
@@ -78,8 +78,6 @@ dashboardRouter.post('/addDevice', async (req, res, next) => {
     const cat_num = req.body.cat_num;
     const wifi_ssid = req.body.wifi_ssid;
     const wifi_password = req.body.wifi_password;
-
-    console.log(location, cat_num, wifi_ssid, wifi_password);
 
     if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
         return res.status(422).json({
