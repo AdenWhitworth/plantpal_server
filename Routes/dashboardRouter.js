@@ -114,7 +114,8 @@ dashboardRouter.post('/addDevice', async (req, res, next) => {
             });
         } else {
             return res.status(201).send({
-                msg: 'The device has been registerd with us!'
+                msg: 'The device has been registerd with us!',
+                newDevice: newDevice
             });
         }
         

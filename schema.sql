@@ -56,13 +56,19 @@ VALUES("A2B3C4", 1, "test", "password", false, false, "livingroom");
 INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
 VALUES("A3B4C5", 1, "test", "password", false, false, "bedroom");
 
+DELETE FROM devices
+WHERE cat_num = "A4B5C6";
+
+SET GLOBAL time_zone = '+00:00';
+SET time_zone = '+00:00';
+
 USE plantpal_app
 CREATE TABLE deviceLogs (
   log_id int(11) NOT NULL AUTO_INCREMENT,
   cat_num varchar(50) NOT NULL,
   soil_temp FLOAT NOT NULL,
   soil_cap int(11) NOT NULL,
-  log_date DATETIME(0),
+  log_date TIMESTAMP,
   water BOOLEAN NOT NULL,
   PRIMARY KEY (log_id),
   FOREIGN KEY (cat_num) REFERENCES devices(cat_num)
@@ -119,3 +125,6 @@ VALUES("A2B3C4", now());
 
 INSERT INTO factoryDevices (cat_num, factory_date)
 VALUES("A3B4C5", now());
+
+INSERT INTO factoryDevices (cat_num, factory_date)
+VALUES("A4B5C6", now());
