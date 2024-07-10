@@ -120,3 +120,12 @@ export async function getLastDeviceLog(cat_num){
     return rows[0];
 }
 
+export async function updateDeviceAuto(device_id, automate){
+    const [result] = await pool.query(`
+        UPDATE devices
+        SET automate = ?
+        WHERE device_id = ?
+    `, [automate, device_id]);
+    
+    return getUserDevice(device_id);
+}

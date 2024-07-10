@@ -4,7 +4,7 @@ import { check } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto.js';
 import jwt from 'jsonwebtoken';
 
-import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi } from '../database.js';
+import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi, updateDeviceAuto } from '../database.js';
 
 const deviceValidation = [
     check('cat_num', 'Catalog number is requied').not().isEmpty()
@@ -159,6 +159,42 @@ dashboardRouter.post('/updateWifi', async (req, res, next) => {
         } else {
             return res.status(201).send({
                 msg: 'The device network has been updated!'
+            });
+        }
+    });
+
+});
+
+dashboardRouter.post('/updateAuto', async (req, res, next) => {
+    
+    const device_id = req.body.device_id;
+    const automate = req.body.automate;
+
+    if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
+        return res.status(422).json({
+            message: "Please provide the token",
+        });
+    }
+
+    const theToken = req.headers.authorization.split(' ')[1];
+
+    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+        if (err){
+            return res.status(422).json({
+                message: "Please provide the token",
+            });
+        }
+
+        
+        const updatedDevice = await updateDeviceAuto(device_id, automate);
+
+        if (updatedDevice == null){
+            return res.status(400).send({
+                msg: 'Error updating device auto'
+            });
+        } else {
+            return res.status(201).send({
+                msg: 'The device auto has been updated!'
             });
         }
     });
