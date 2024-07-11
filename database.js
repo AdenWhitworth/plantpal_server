@@ -53,6 +53,16 @@ export async function updateLastLoginTime(user_id){
     return getUserById(user_id);
 }
 
+export async function updateUserInfo(user_id, first_name , last_name, email){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET first_name = ?, last_name = ?, email = ?
+        WHERE user_id = ?
+    `, [first_name, last_name, email, user_id]);
+    
+    return getUserById(user_id);
+}
+
 export async function getUserDevices(user_id){
     const [rows] = await pool.query(`
         SELECT *

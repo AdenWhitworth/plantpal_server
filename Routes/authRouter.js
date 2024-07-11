@@ -3,7 +3,7 @@ const authRouter = express.Router();
 import { check } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getUsers, createUser, getUserByEmail, getUserById, updateLastLoginTime } from '../database.js';
+import { updateUserInfo, createUser, getUserByEmail, getUserById, updateLastLoginTime } from '../database.js';
 
 const signupValidation = [
     check('first_name', 'First name is requied').not().isEmpty(),
@@ -17,13 +17,15 @@ const loginValidation = [
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 })
 ];
 
-const fetchValidation = [
+const updateValidation = [
+    check('first_name', 'First name is requied').not().isEmpty(),
+    check('last_name', 'Last name is requied').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: true }),
 ];
 
 authRouter.post('/register', signupValidation, async (req, res, next) => {
     const email = req.body.email;
-    const password = req.body.password
+    const password = req.body.password;
     const firt_name = req.body.first_name;
     const last_name = req.body.last_name;
     const users = await getUserByEmail(email);
@@ -102,8 +104,11 @@ authRouter.post('/login', loginValidation, async (req, res, next) => {
     });     
 });
 
-authRouter.get('/getUser', fetchValidation, async (req, res, next) => {
-    
+authRouter.post('/updateUser', updateValidation, async (req, res, next) => {
+    const email = req.body.email;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+
     if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
         return res.status(422).json({
             message: "Please provide the token",
@@ -119,15 +124,15 @@ authRouter.get('/getUser', fetchValidation, async (req, res, next) => {
             });
         }
 
-        const user = await getUserById(authorizedData.user_id);
+        const updatedUser = await updateUserInfo(authorizedData.user_id, first_name, last_name, email);
 
-        if (user == null){
+        if (updatedUser.first_name !== first_name || updatedUser.last_name !== last_name || updatedUser.email !== email){
             return res.status(401).send(
-                { error: true, user: user, message: 'Fetch Unsuccessfully.' }
+                { error: true, user: updatedUser, message: 'User Update Unsuccessfully.' }
             );
         }
 
-        return res.send({ error: false, user: user, message: 'Fetch Successfully.' });
+        return res.send({ error: false, user: updatedUser, message: 'User Update Successfully.' });
         
     });
 });
