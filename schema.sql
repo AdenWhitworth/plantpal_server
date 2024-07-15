@@ -1,24 +1,7 @@
-/* Test Database */
-
-CREATE DATABASE notes_app;
-USE notes_app
-
-CREATE TABLE notes (
-    id integer PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    contents TEXT NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-INSERT INTO notes (title, contents)
-VALUES
-('My First Note','A note about something'),
-('My Second Note', 'A note about something else');
-
-/* User Authentication Database */
+/* User Authentication Table */
 
 CREATE DATABASE plantpal_app;
-USE plantpal_app
+USE plantpal_app;
 CREATE TABLE users (
   user_id int(11) NOT NULL AUTO_INCREMENT,
   first_name varchar(50) NOT NULL,
@@ -29,8 +12,13 @@ CREATE TABLE users (
   PRIMARY KEY (user_id),
   UNIQUE KEY (email)
  ) ENGINE=InnoDB;
+ 
+ USE plantpal_app;
+ SELECT * FROM users;
 
-USE plantpal_app
+/* Devices Table */
+
+USE plantpal_app;
 CREATE TABLE devices (
   device_id int(11) NOT NULL AUTO_INCREMENT,
   cat_num varchar(50) NOT NULL,
@@ -62,7 +50,9 @@ WHERE cat_num = "A4B5C6";
 SET GLOBAL time_zone = '+00:00';
 SET time_zone = '+00:00';
 
-USE plantpal_app
+/* Device Logs Table */
+
+USE plantpal_app;
 CREATE TABLE deviceLogs (
   log_id int(11) NOT NULL AUTO_INCREMENT,
   cat_num varchar(50) NOT NULL,
@@ -107,8 +97,11 @@ WHERE  cat_num = "A1B2C3"
 ORDER  BY log_date DESC
 LIMIT  1;
 
+SELECT * FROM deviceLogs;
 
-USE plantpal_app
+/* Factory Devices Table */
+
+USE plantpal_app;
 CREATE TABLE factoryDevices (
   factory_id int(11) NOT NULL AUTO_INCREMENT,
   cat_num varchar(50) NOT NULL,
