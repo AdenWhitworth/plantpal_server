@@ -50,6 +50,9 @@ WHERE cat_num = "A4B5C6";
 SET GLOBAL time_zone = '+00:00';
 SET time_zone = '+00:00';
 
+ USE plantpal_app;
+ SELECT * FROM devices;
+
 /* Device Logs Table */
 
 USE plantpal_app;

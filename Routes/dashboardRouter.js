@@ -201,4 +201,16 @@ dashboardRouter.post('/updateAuto', async (req, res, next) => {
 
 });
 
+dashboardRouter.post('/lambdaLogUpdate', async (req, res, next) => {
+    
+    const didUpdate = req.body.didUpdate;
+
+    console.log("didUpdate: ", didUpdate);
+
+    return res.status(201).send({
+        msg: 'The device auto has been updated!'
+    });
+
+});
+
 export {dashboardRouter};

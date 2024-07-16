@@ -30,6 +30,7 @@ export const handler = async (event) => {
                 results
             })
         };
+        
     } catch (error) {
         if (connection) {
             await connection.end();
