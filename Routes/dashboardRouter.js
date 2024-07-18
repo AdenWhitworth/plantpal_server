@@ -201,14 +201,20 @@ dashboardRouter.post('/updateAuto', async (req, res, next) => {
 
 });
 
-dashboardRouter.post('/lambdaLogUpdate', async (req, res, next) => {
+dashboardRouter.post('/shadowUpdate', async (req, res, next) => {
     
-    const didUpdate = req.body.didUpdate;
-
-    console.log("didUpdate: ", didUpdate);
-
+    const apiKey = req.headers['x-api-key'];
+    const thingName = req.body.thingName;
+    const shadowConnection = req.body.shadowConnection;
+    
+    console.log(thingName,shadowConnection);
+    
+    if (apiKey !== process.env.API_KEY) {
+        return res.status(403).send({ message: 'Forbidden' });
+    }
+    
     return res.status(201).send({
-        msg: 'The device auto has been updated!'
+        msg: 'shadow update recieved'
     });
 
 });

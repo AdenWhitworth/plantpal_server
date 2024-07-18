@@ -1,4 +1,5 @@
 /* User Authentication Table */
+/*powershell Compress-Archive -Path * -DestinationPath ../nodejs-layer.zip*/
 
 CREATE DATABASE plantpal_app;
 USE plantpal_app;

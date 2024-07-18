@@ -80,7 +80,7 @@ authRouter.post('/login', loginValidation, async (req, res, next) => {
         }
 
         if (bResult) {
-            const token = jwt.sign({user_id: user_id},'the-super-strong-secrect', { expiresIn: '1h' });
+            const token = jwt.sign({user_id: user_id},process.env.SECRET_KEY, { expiresIn: '1h' });
             
             const updatedUser = await updateLastLoginTime(user_id);
             
@@ -117,7 +117,7 @@ authRouter.post('/updateUser', updateValidation, async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
