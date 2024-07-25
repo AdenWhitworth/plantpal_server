@@ -223,6 +223,7 @@ dashboardRouter.post('/shadowUpdate', async (req, res, next) => {
     try {
         
         emitToUser(userId,'shadowUpdate',{
+            device: device,
             thing_name: thing_name,
             shadow_connection: shadow_connection
         })
