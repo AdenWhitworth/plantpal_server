@@ -27,11 +27,13 @@ CREATE TABLE devices (
   wifi_ssid varchar(50) NOT NULL,
   wifi_password TEXT NOT NULL,
   init_vec varchar(255) NOT NULL,
-  connection_status BOOLEAN NOT NULL,
+  thing_name varchar(255) NOT NULL,
+  shadow_connection BOOLEAN NOT NULL,
   automate BOOLEAN NOT NULL,
   location varchar(50) NOT NULL,
   PRIMARY KEY (device_id),
   UNIQUE KEY (cat_num),
+  UNIQUE KEY (thing_name),
   FOREIGN KEY (user_id) REFERENCES users(user_id),
   FOREIGN KEY (cat_num) REFERENCES factoryDevices(cat_num)
  ) ENGINE=InnoDB;

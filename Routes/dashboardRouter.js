@@ -3,15 +3,16 @@ const dashboardRouter = express.Router();
 import { check } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto.js';
 import jwt from 'jsonwebtoken';
+import { emitToUser } from '../sockets/index.js';
 
-import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi, updateDeviceAuto } from '../database.js';
+import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi, updateDeviceAuto, getThingDevice } from '../database.js';
 
 const deviceValidation = [
     check('cat_num', 'Catalog number is requied').not().isEmpty()
 ];
 
 dashboardRouter.get('/userDevices', async (req, res, next) => {
-    
+
     if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer') ||!req.headers.authorization.split(' ')[1]){
         return res.status(422).json({
             message: "Please provide the token",
@@ -20,7 +21,7 @@ dashboardRouter.get('/userDevices', async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
@@ -51,7 +52,7 @@ dashboardRouter.get('/deviceLogs', deviceValidation, async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
@@ -87,7 +88,7 @@ dashboardRouter.post('/addDevice', async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
@@ -137,7 +138,7 @@ dashboardRouter.post('/updateWifi', async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
@@ -178,7 +179,7 @@ dashboardRouter.post('/updateAuto', async (req, res, next) => {
 
     const theToken = req.headers.authorization.split(' ')[1];
 
-    jwt.verify(theToken, 'the-super-strong-secrect', async (err, authorizedData) =>{
+    jwt.verify(theToken, process.env.SECRET_KEY, async (err, authorizedData) =>{
         if (err){
             return res.status(422).json({
                 message: "Please provide the token",
@@ -204,19 +205,35 @@ dashboardRouter.post('/updateAuto', async (req, res, next) => {
 dashboardRouter.post('/shadowUpdate', async (req, res, next) => {
     
     const apiKey = req.headers['x-api-key'];
-    const thingName = req.body.thingName;
-    const shadowConnection = req.body.shadowConnection;
-    
-    console.log(thingName,shadowConnection);
+    const thing_name = req.body.thingName;
+    const shadow_connection = req.body.shadowConnection;
     
     if (apiKey !== process.env.API_KEY) {
         return res.status(403).send({ message: 'Forbidden' });
     }
-    
-    return res.status(201).send({
-        msg: 'shadow update recieved'
-    });
 
+    const device = await getThingDevice(thing_name);
+
+    if (device == null){
+        return res.status(500).send({
+            msg: 'Error find device thing'
+        });
+    } 
+    
+    try {
+        
+        emitToUser(userId,'shadowUpdate',{
+            thing_name: thing_name,
+            shadow_connection: shadow_connection
+        })
+            
+        return res.status(201).send({
+            msg: 'shadow update recieved'
+        });
+    } catch (error) {
+        res.status(500).send({ message: 'No socket connection' });
+    }
+    
 });
 
 export {dashboardRouter};

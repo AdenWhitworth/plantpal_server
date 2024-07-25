@@ -139,3 +139,12 @@ export async function updateDeviceAuto(device_id, automate){
     
     return getUserDevice(device_id);
 }
+
+export async function getThingDevice(thing_name) {
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM devices
+        WHERE thing_name = ?
+    `, [thing_name]);
+    return rows[0];
+}
