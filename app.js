@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import {authRouter} from './Routes/authRouter.js';
 import {dashboardRouter} from './Routes/dashboardRouter.js';
-import { initSocket, connectSocket } from './sockets/index.js';
+import { initSocket, connectSocket } from './Sockets/index.js';
 import http from 'http';
 
 const app = express();

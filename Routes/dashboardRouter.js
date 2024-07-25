@@ -3,9 +3,9 @@ const dashboardRouter = express.Router();
 import { check } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto.js';
 import jwt from 'jsonwebtoken';
-import { emitToUser } from '../sockets/index.js';
+import { emitToUser } from '../Sockets/index.js';
 
-import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi, updateDeviceAuto, getThingDevice } from '../database.js';
+import { getUserDevices, getDeviceLogs, getLastDeviceLog, getFactoryDevice, addUserDevice, updateDeviceWifi, updateDeviceAuto, getThingDevice } from '../MySQL/database.js';
 
 const deviceValidation = [
     check('cat_num', 'Catalog number is requied').not().isEmpty()

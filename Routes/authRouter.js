@@ -3,7 +3,7 @@ const authRouter = express.Router();
 import { check } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { updateUserInfo, createUser, getUserByEmail, getUserById, updateLastLoginTime } from '../database.js';
+import { updateUserInfo, createUser, getUserByEmail, getUserById, updateLastLoginTime } from '../MySQL/database.js';
 
 const signupValidation = [
     check('first_name', 'First name is requied').not().isEmpty(),
