@@ -12,10 +12,36 @@ function initSocket(server) {
   });
 }
 
+const validateToken = async (socket, next) => {
+
+  let token = socket.handshake.auth.token;
+
+  if (!token) {
+    return next(new Error('Authentication error'));
+  }
+
+  if (token.startsWith('Bearer ')) {
+    token = token.split(' ')[1];
+  }
+  
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+      if (err) {
+          return next(new Error('Authentication error'));
+      }
+      socket.user = decoded;
+      next();
+  });
+
+};
+
 function connectSocket() {
   if (!io) {
     throw new Error('Socket.IO has not been initialized.');
   }
+
+  io.use((socket, next) => {
+    validateToken(socket, next);
+  });
   
   io.on('connection', (socket) => {
     handleAddUser(socket);
