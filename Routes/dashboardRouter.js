@@ -98,6 +98,19 @@ const updatePumpWaterValidation = [
     check('pump_water', 'Pump_water is required').not().isEmpty(),
 ];
 
+const shadowUpdatePumpWaterValidation = [
+    check('thingName', 'ThingName is required').not().isEmpty(),
+    check('shadowPump', 'shadowPump is required').not().isEmpty(),
+    check('x-api-key')
+        .custom((value, { req }) => {
+            if (value !== process.env.API_KEY) {
+                throw new Error('Invalid API key');
+            }
+            return true;
+        })
+        .withMessage('Forbidden')
+];
+
 const handleErrors = (res, err, msg) => res.status(500).json({ message: msg, error: err.message });
 
 dashboardRouter.get('/userDevices', validateToken, async (req, res) => {
@@ -235,6 +248,28 @@ dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidati
         handleErrors(res, error, 'Error updating device pump water');
     }
 });
+
+dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpWaterValidation), async (req, res) => {
+    const { thingName, shadowPump } = req.body;
+
+    try {
+        const factoryDevice = await getThingFactoryDevice(thingName);
+        if (!factoryDevice) {
+            return res.status(500).json({ message: 'Error finding device thing' });
+        }
+
+        const userDevice = await getDevice(factoryDevice.cat_num);
+        if (!userDevice) {
+            return res.status(500).json({ message: 'Error finding user device' });
+        }
+        
+        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_pump: shadowPump });
+        return res.status(201).json({ message: 'Shadow pump water update received' });
+    } catch (error) {
+        handleErrors(res, error, 'No socket connection to send pump water shadow update to');
+    }
+});
+
 
 
 
