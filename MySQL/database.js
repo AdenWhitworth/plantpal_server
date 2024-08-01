@@ -83,7 +83,7 @@ export async function getUserDevice(device_id){
 
 export async function addUserDevice(cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location){
     const [result] = await pool.query(`
-        INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location)
+        INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, init_vec, shadow_connection, automate, location)
         VALUES(?, ?, ?, ?, ?, ?, ?, ?)
     `, [cat_num, user_id, wifi_ssid, wifi_password, init_vec, connection_status, automate, location]);
     
@@ -140,11 +140,39 @@ export async function updateDeviceAuto(device_id, automate){
     return getUserDevice(device_id);
 }
 
-export async function getThingDevice(thing_name) {
+export async function getThingFactoryDevice(thing_name) {
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM factoryDevices
+        WHERE thing_name = ?
+    `, [thing_name]);
+    return rows[0];
+}
+
+export async function updateUserSocketId(user_id, socket_id){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET socket_id = ?
+        WHERE user_id = ?
+    `, [socket_id, user_id]);
+    
+    return getUserById(user_id);
+}
+
+export async function getUserBySocket(socket_id){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM users
+        WHERE socket_id = ?
+    `, [socket_id]);
+    return rows[0];
+}
+
+export async function getDevice(cat_num){
     const [rows] = await pool.query(`
         SELECT *
         FROM devices
-        WHERE thing_name = ?
-    `, [thing_name]);
+        WHERE cat_num = ?
+    `, [cat_num]);
     return rows[0];
 }
