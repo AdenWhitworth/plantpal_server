@@ -176,3 +176,13 @@ export async function getDevice(cat_num){
     `, [cat_num]);
     return rows[0];
 }
+
+export async function updateDevicePumpWater(device_id, pump_water){
+    const [result] = await pool.query(`
+        UPDATE devices
+        SET pump_water = ?
+        WHERE device_id = ?
+    `, [pump_water, device_id]);
+    
+    return getUserDevice(device_id);
+}

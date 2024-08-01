@@ -13,6 +13,7 @@ import {
     updateDeviceAuto,
     getThingFactoryDevice,
     getDevice,
+    updateDevicePumpWater,
 } from '../MySQL/database.js';
 
 const dashboardRouter = express.Router();
@@ -81,7 +82,7 @@ const shadowUpdateConnectionValidation = [
 
 const shadowUpdateAutoValidation = [
     check('thingName', 'ThingName is required').not().isEmpty(),
-    check('shadowConnection', 'ShadowConnection is required').not().isEmpty(),
+    check('shadowAuto', 'shadowAuto is required').not().isEmpty(),
     check('x-api-key')
         .custom((value, { req }) => {
             if (value !== process.env.API_KEY) {
@@ -90,6 +91,11 @@ const shadowUpdateAutoValidation = [
             return true;
         })
         .withMessage('Forbidden')
+];
+
+const updatePumpWaterValidation = [
+    check('device_id', 'Device_id number is required').not().isEmpty(),
+    check('pump_water', 'Pump_water is required').not().isEmpty(),
 ];
 
 const handleErrors = (res, err, msg) => res.status(500).json({ message: msg, error: err.message });
@@ -214,5 +220,22 @@ dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValida
         handleErrors(res, error, 'No socket connection to send auto shadow to');
     }
 });
+
+dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidation), async (req, res) => {
+    const { device_id, pump_water } = req.body;
+
+    try {
+        const updatedDevice = await updateDevicePumpWater(device_id, pump_water);
+        if (!updatedDevice) {
+            return res.status(400).json({ message: 'Error updating device pump water' });
+        }
+
+        return res.status(201).json({ message: 'The device pump water has been updated!' });
+    } catch (error) {
+        handleErrors(res, error, 'Error updating device pump water');
+    }
+});
+
+
 
 export { dashboardRouter };
