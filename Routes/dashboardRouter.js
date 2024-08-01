@@ -79,12 +79,14 @@ const shadowUpdateValidation = [
         .withMessage('Forbidden')
 ];
 
+const handleErrors = (res, err, msg) => res.status(500).json({ message: msg, error: err.message });
+
 dashboardRouter.get('/userDevices', validateToken, async (req, res) => {
     try {
         const devices = await getUserDevices(req.user.user_id);
         return res.send({ error: false, devices: devices || [], message: 'Fetch Successfully.' });
     } catch (error) {
-        return res.status(500).json({ message: 'Error fetching user devices' });
+        handleErrors(res, error, 'Error fetching user devices');
     }
 });
 
@@ -102,7 +104,7 @@ dashboardRouter.get('/deviceLogs', validateToken, validateRequest(deviceLogsVali
             message: 'Fetch Successfully.',
         });
     } catch (error) {
-        return res.status(500).json({ message: 'Error fetching device logs' });
+        handleErrors(res, error, 'Error fetching device logs');
     }
 });
 
@@ -123,7 +125,7 @@ dashboardRouter.post('/addDevice', validateToken, validateRequest(addDeviceValid
 
         return res.status(201).json({ message: 'The device has been registered with us!', newDevice: newDevice });
     } catch (error) {
-        return res.status(500).json({ message: 'Error adding device' });
+        handleErrors(res, error, 'Error adding device');
     }
 });
 
@@ -139,7 +141,7 @@ dashboardRouter.post('/updateWifi', validateToken, validateRequest(updateWifiVal
 
         return res.status(201).json({ message: 'The device network has been updated!' });
     } catch (error) {
-        return res.status(500).json({ message: 'Error updating device network' });
+        handleErrors(res, error, 'Error updating device network');
     }
 });
 
@@ -154,7 +156,7 @@ dashboardRouter.post('/updateAuto', validateToken, validateRequest(updateAutoVal
 
         return res.status(201).json({ message: 'The device auto has been updated!' });
     } catch (error) {
-        return res.status(500).json({ message: 'Error updating device auto' });
+        handleErrors(res, error, 'Error updating device auto');
     }
 });
 
@@ -175,7 +177,7 @@ dashboardRouter.post('/shadowUpdate', validateRequest(shadowUpdateValidation), a
         emitToUser(userDevice.user_id, 'shadowUpdate', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_connection: shadowConnection });
         return res.status(201).json({ message: 'Shadow update received' });
     } catch (error) {
-        return res.status(500).json({ message: 'No socket connection', error: error.message });
+        handleErrors(res, error, 'No socket connection to update shadow for');
     }
 });
 
