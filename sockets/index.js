@@ -14,10 +14,10 @@ function initSocket(server) {
 
 const validateToken = async (socket, next) => {
 
-  let token = socket.handshake.auth.token;
+  const token = socket.handshake.auth.token;
 
   if (!token) {
-    return next(new Error('Authentication error'));
+    return next();
   }
 
   if (token.startsWith('Bearer ')) {
@@ -44,10 +44,13 @@ function connectSocket() {
   });
   
   io.on('connection', (socket) => {
-    handleAddUser(socket);
-    handleRemoveUser(socket);
-    handleDisconnect(socket);
-    handleCheckSocket(socket);
+
+    if (socket.user) {
+      handleAddUser(socket);
+      handleRemoveUser(socket);
+      handleDisconnect(socket);
+      handleCheckSocket(socket);
+    }
   });
 }
 
