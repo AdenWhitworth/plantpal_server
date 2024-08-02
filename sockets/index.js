@@ -145,7 +145,7 @@ async function emitToUser(user_id, eventName, data) {
   }
 
   try {
-    let user = await getUserById(user_id);
+    const user = await getUserById(user_id);
 
     if (!user || user.socket_id === null) {
       throw new Error(`User ${user_id} is not connected`);
