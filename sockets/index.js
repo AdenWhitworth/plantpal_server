@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { getUserById, updateUserSocketId, getUserBySocket } from '../MySQL/database.js';
+import jwt from 'jsonwebtoken';
 
 let io;
 
@@ -15,9 +16,9 @@ function initSocket(server) {
 const validateToken = async (socket, next) => {
 
   const token = socket.handshake.auth.token;
-
+  
   if (!token) {
-    return next();
+    return next(new Error('Authentication error'));
   }
 
   if (token.startsWith('Bearer ')) {
@@ -45,12 +46,11 @@ function connectSocket() {
   
   io.on('connection', (socket) => {
 
-    if (socket.user) {
-      handleAddUser(socket);
-      handleRemoveUser(socket);
-      handleDisconnect(socket);
-      handleCheckSocket(socket);
-    }
+    handleAddUser(socket);
+    handleRemoveUser(socket);
+    handleDisconnect(socket);
+    handleCheckSocket(socket);
+    
   });
 }
 
