@@ -196,3 +196,13 @@ export async function updateDeviceShadowConnection(device_id, shadow_connection)
     
     return getUserDevice(device_id);
 }
+
+export async function updateDeviceShadowPump(device_id, shadow_pump) {
+    const [result] = await pool.query(`
+        UPDATE devices
+        SET pump_water = ?
+        WHERE shadow_pump = ?
+    `, [shadow_pump ? 1 : 0, device_id]);
+    
+    return getUserDevice(device_id);
+}

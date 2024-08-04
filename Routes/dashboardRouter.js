@@ -15,6 +15,7 @@ import {
     getDevice,
     updateDevicePumpWater,
     updateDeviceShadowConnection,
+    updateDeviceShadowPump,
 } from '../MySQL/database.js';
 
 const dashboardRouter = express.Router();
@@ -219,7 +220,7 @@ dashboardRouter.post('/shadowUpdateConnection', validateRequest(shadowUpdateConn
             return res.status(500).json({ message: 'Error updating device connection in database'});
         }
         
-        emitToUser(userDevice.user_id, 'shadowUpdateConnection', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_connection: shadowConnection });
+        emitToUser(userDevice.user_id, 'shadowUpdateConnection', { device: updatedUserDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_connection: shadowConnection });
         return res.status(201).json({ message: 'Shadow connection update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send connection shadow to');
@@ -266,17 +267,29 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
     const { thingName, shadowPump } = req.body;
 
     try {
+
         const factoryDevice = await getThingFactoryDevice(thingName);
+
         if (!factoryDevice) {
             return res.status(500).json({ message: 'Error finding device thing' });
         }
 
         const userDevice = await getDevice(factoryDevice.cat_num);
+
         if (!userDevice) {
             return res.status(500).json({ message: 'Error finding user device' });
         }
+
+        const updatedUserDevice = await updateDevicePumpWater(userDevice.device_id,shadowPump);
+
+        const dbShadowPump = Number(updatedUserDevice.shadow_pump);
+        const inputShadowPump = shadowPump ? 1 : 0;
+
+        if (dbShadowPump !== inputShadowPump? 1 : 0){
+            return res.status(500).json({ message: 'Error updating device pump water in database'});
+        }
         
-        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_pump: shadowPump });
+        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: updatedUserDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_pump: shadowPump });
         return res.status(201).json({ message: 'Shadow pump water update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send pump water shadow update to');
