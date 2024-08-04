@@ -194,6 +194,27 @@ dashboardRouter.post('/updateAuto', validateToken, validateRequest(updateAutoVal
     }
 });
 
+dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValidation), async (req, res) => {
+    const { thingName, shadowAuto } = req.body;
+
+    try {
+        const factoryDevice = await getThingFactoryDevice(thingName);
+        if (!factoryDevice) {
+            return res.status(500).json({ message: 'Error finding device thing' });
+        }
+
+        const userDevice = await getDevice(factoryDevice.cat_num);
+        if (!userDevice) {
+            return res.status(500).json({ message: 'Error finding user device' });
+        }
+        
+        emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_auto: shadowAuto });
+        return res.status(201).json({ message: 'Shadow auto update received' });
+    } catch (error) {
+        handleErrors(res, error, 'No socket connection to send auto shadow to');
+    }
+});
+
 dashboardRouter.post('/shadowUpdateConnection', validateRequest(shadowUpdateConnectionValidation), async (req, res) => {
     const { thingName, shadowConnection } = req.body;
 
@@ -224,27 +245,6 @@ dashboardRouter.post('/shadowUpdateConnection', validateRequest(shadowUpdateConn
         return res.status(201).json({ message: 'Shadow connection update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send connection shadow to');
-    }
-});
-
-dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValidation), async (req, res) => {
-    const { thingName, shadowAuto } = req.body;
-
-    try {
-        const factoryDevice = await getThingFactoryDevice(thingName);
-        if (!factoryDevice) {
-            return res.status(500).json({ message: 'Error finding device thing' });
-        }
-
-        const userDevice = await getDevice(factoryDevice.cat_num);
-        if (!userDevice) {
-            return res.status(500).json({ message: 'Error finding user device' });
-        }
-        
-        emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_auto: shadowAuto });
-        return res.status(201).json({ message: 'Shadow auto update received' });
-    } catch (error) {
-        handleErrors(res, error, 'No socket connection to send auto shadow to');
     }
 });
 
