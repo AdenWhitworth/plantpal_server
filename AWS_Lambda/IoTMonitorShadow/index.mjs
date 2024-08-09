@@ -13,10 +13,6 @@ export const handler = async (event) => {
 
   const updates = [];
 
-  if (previousReported && previousReported.connected !== undefined && currentReported.connected !== previousReported.connected) {
-    updates.push(handleUpdate('shadowUpdateConnection', thingName, 'shadowConnection', currentReported.connected));
-  }
-
   if (previousReported && previousReported.pump !== undefined && currentReported.pump !== previousReported.pump) {
     updates.push(handleUpdate('shadowUpdatePumpWater', thingName, 'shadowPump', currentReported.pump));
   }
