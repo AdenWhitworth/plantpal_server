@@ -9,13 +9,18 @@ CREATE TABLE users (
   last_name varchar(50) NOT NULL,
   email varchar(50) NOT NULL,
   password varchar(200) NOT NULL,
-  last_login DATETIME(0), 
+  last_login DATETIME(0),
+  socket_id VARCHAR(255),
   PRIMARY KEY (user_id),
   UNIQUE KEY (email)
  ) ENGINE=InnoDB;
  
  USE plantpal_app;
  SELECT * FROM users;
+ 
+USE plantpal_app; 
+ALTER TABLE users
+ADD COLUMN socket_id VARCHAR(255);
 
 /* Devices Table */
 
@@ -27,15 +32,15 @@ CREATE TABLE devices (
   wifi_ssid varchar(50) NOT NULL,
   wifi_password TEXT NOT NULL,
   init_vec varchar(255) NOT NULL,
-  thing_name varchar(255) NOT NULL,
-  shadow_connection BOOLEAN NOT NULL,
-  automate BOOLEAN NOT NULL,
+  presence_connection BOOLEAN NOT NULL,
   location varchar(50) NOT NULL,
+  thing_name varchar(255) NOT NULL,
   PRIMARY KEY (device_id),
   UNIQUE KEY (cat_num),
   UNIQUE KEY (thing_name),
   FOREIGN KEY (user_id) REFERENCES users(user_id),
-  FOREIGN KEY (cat_num) REFERENCES factoryDevices(cat_num)
+  FOREIGN KEY (cat_num) REFERENCES factoryDevices(cat_num),
+  FOREIGN KEY (thing_name) REFERENCES factoryDevices(thing_name)
  ) ENGINE=InnoDB;
 
 INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
@@ -55,6 +60,18 @@ SET time_zone = '+00:00';
 
  USE plantpal_app;
  SELECT * FROM devices;
+ 
+ USE plantpal_app;
+ DROP TABLE devices;
+ 
+USE plantpal_app; 
+ALTER TABLE devices
+ADD COLUMN thing_name varchar(255) NOT NULL;
+
+USE plantpal_app;
+UPDATE devices
+SET thing_name = 'PlantPal-thing'
+WHERE cat_num = 'A1B2C3';
 
 /* Device Logs Table */
 
@@ -105,6 +122,9 @@ LIMIT  1;
 
 SELECT * FROM deviceLogs;
 
+ USE plantpal_app;
+ DROP TABLE deviceLogs;
+
 /* Factory Devices Table */
 
 USE plantpal_app;
@@ -112,12 +132,14 @@ CREATE TABLE factoryDevices (
   factory_id int(11) NOT NULL AUTO_INCREMENT,
   cat_num varchar(50) NOT NULL,
   factory_date DATETIME(0),
+  thing_name varchar(255) NOT NULL,
   UNIQUE KEY (cat_num),
+  UNIQUE KEY (thing_name),
   PRIMARY KEY (factory_id)
  ) ENGINE=InnoDB;
 
-INSERT INTO factoryDevices (cat_num, factory_date)
-VALUES("A1B2C3", now());
+INSERT INTO factoryDevices (cat_num, factory_date, thing_name)
+VALUES("A1B2C3", now(), "PlantPal-thing");
 
 INSERT INTO factoryDevices (cat_num, factory_date)
 VALUES("A2B3C4", now());
@@ -127,3 +149,9 @@ VALUES("A3B4C5", now());
 
 INSERT INTO factoryDevices (cat_num, factory_date)
 VALUES("A4B5C6", now());
+
+USE plantpal_app;
+DROP TABLE factoryDevices;
+
+USE plantpal_app;
+SELECT * FROM factoryDevices;

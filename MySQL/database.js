@@ -130,25 +130,6 @@ export async function getLastDeviceLog(cat_num){
     return rows[0];
 }
 
-export async function updateDeviceAuto(device_id, automate){
-    const [result] = await pool.query(`
-        UPDATE devices
-        SET automate = ?
-        WHERE device_id = ?
-    `, [automate, device_id]);
-    
-    return getUserDevice(device_id);
-}
-
-export async function getThingFactoryDevice(thing_name) {
-    const [rows] = await pool.query(`
-        SELECT *
-        FROM factoryDevices
-        WHERE thing_name = ?
-    `, [thing_name]);
-    return rows[0];
-}
-
 export async function updateUserSocketId(user_id, socket_id){
     const [result] = await pool.query(`
         UPDATE users
@@ -177,32 +158,21 @@ export async function getDevice(cat_num){
     return rows[0];
 }
 
-export async function updateDevicePumpWater(device_id, pump_water){
-    const [result] = await pool.query(`
-        UPDATE devices
-        SET pump_water = ?
-        WHERE device_id = ?
-    `, [pump_water, device_id]);
-    
-    return getUserDevice(device_id);
+export async function getDeviceThing(thingName){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM devices
+        WHERE thing_name = ?
+    `, [thingName]);
+    return rows[0];
 }
 
-export async function updateDeviceShadowConnection(device_id, shadow_connection) {
+export async function updatePresenceConnection(device_id, presenceConnection){
     const [result] = await pool.query(`
         UPDATE devices
-        SET shadow_connection = ?
+        SET presence_connection = ?
         WHERE device_id = ?
-    `, [shadow_connection ? 1 : 0, device_id]);
-    
-    return getUserDevice(device_id);
-}
-
-export async function updateDeviceShadowPump(device_id, shadow_pump) {
-    const [result] = await pool.query(`
-        UPDATE devices
-        SET pump_water = ?
-        WHERE shadow_pump = ?
-    `, [shadow_pump ? 1 : 0, device_id]);
+    `, [presenceConnection, device_id]);
     
     return getUserDevice(device_id);
 }

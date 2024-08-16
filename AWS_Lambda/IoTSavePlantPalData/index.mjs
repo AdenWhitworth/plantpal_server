@@ -14,10 +14,10 @@ export const handler = async (event) => {
         connection = await mysql.createConnection(dbConfig);
         console.log('Connected to the database');
 
-        const { cat_num, soil_temp, soil_cap, log_date, water } = event;
+        const { cat_num, soil_temp, soil_cap, water } = event;
 
-        const query = 'INSERT INTO deviceLogs (cat_num, soil_temp, soil_cap, log_date, water) VALUES (?, ?, ?, ?, ?)';
-        const values = [cat_num, soil_temp, soil_cap, log_date, water];
+        const query = 'INSERT INTO deviceLogs (cat_num, soil_temp, soil_cap, log_date, water) VALUES (?, ?, ?, now(), ?)';
+        const values = [cat_num, soil_temp, soil_cap, water];
 
         const [results] = await connection.execute(query, values);
 

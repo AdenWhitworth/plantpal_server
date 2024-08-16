@@ -18,24 +18,24 @@ export const handler = async (event) => {
       const isConnected = eventType === 'connected';
       console.log(`Device ${clientId} ${isConnected ? 'connected' : 'disconnected'}.`);
   
-      await updateShadowConnection(clientId, isConnected);
+      await updatePresenceConnection(clientId, isConnected);
       
-      return createResponse(200, 'Shadow Update(s) Posted');
+      return createResponse(200, 'Presence Update Posted');
     } catch (error) {
       console.error('Error Processing Event:', {
         message: error.message,
         stack: error.stack,
         event,
       });
-      return createResponse(500, 'Error Posting Shadow Update', error.message);
+      return createResponse(500, 'Error Posting Presence Update', error.message);
     }
   };
   
-  const updateShadowConnection = async (thingName, isConnected) => {
+  const updatePresenceConnection = async (thingName, isConnected) => {
     try {
-      await client.post('/dashboard/shadowUpdateConnection', { thingName, shadowConnection: isConnected });
+      await client.post('/dashboard/presenceUpdateConnection', { thingName, presenceConnection: isConnected });
     } catch (error) {
-      throw new Error(`Error posting shadowConnection update: ${error.message}`);
+      throw new Error(`Error posting connection update: ${error.message}`);
     }
   };
   

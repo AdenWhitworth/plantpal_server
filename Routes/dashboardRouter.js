@@ -10,15 +10,21 @@ import {
     getFactoryDevice,
     addUserDevice,
     updateDeviceWifi,
-    updateDeviceAuto,
-    getThingFactoryDevice,
-    getDevice,
-    updateDevicePumpWater,
-    updateDeviceShadowConnection,
-    updateDeviceShadowPump,
+    getDeviceThing,
+    getUserDevice,
+    updatePresenceConnection,
 } from '../MySQL/database.js';
+import AWS from 'aws-sdk';
 
 const dashboardRouter = express.Router();
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+
+const iotData = new AWS.IotData({ endpoint: process.env.AWS_IOT_ENDPOINT });
 
 const validateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -69,9 +75,9 @@ const updateAutoValidation = [
     check('automate', 'Automate is required').not().isEmpty(),
 ];
 
-const shadowUpdateConnectionValidation = [
+const presenceUpdateConnectionValidation = [
     check('thingName', 'ThingName is required').not().isEmpty(),
-    check('shadowConnection', 'ShadowConnection is required').not().isEmpty(),
+    check('presenceConnection', 'presenceConnection is required').not().isEmpty(),
     check('x-api-key')
         .custom((value, { req }) => {
             if (value !== process.env.API_KEY) {
@@ -113,7 +119,43 @@ const shadowUpdatePumpWaterValidation = [
         .withMessage('Forbidden')
 ];
 
+const deviceShadowValidation = [
+    check('thingName', 'Thing name is required').not().isEmpty(),
+];
+
 const handleErrors = (res, err, msg) => res.status(500).json({ message: msg, error: err.message });
+
+const updateDeviceShadow = async (thingName,desiredState) => {
+    const params = {
+        thingName: thingName,
+        payload: JSON.stringify({
+            state: {
+            desired: desiredState
+            }
+        })
+    };
+
+    try {
+        const response = await iotData.updateThingShadow(params).promise();
+        const data = JSON.parse(response.payload); 
+        return data.payload;
+      } catch (error) {
+        throw error;
+      }
+};
+
+const getDeviceShadow = async (thingName) => {
+    const params = {
+        thingName: thingName
+    };
+
+    try {
+        const data = await iotData.getThingShadow(params).promise();
+        return data.payload;
+    } catch(error){
+        throw error;
+    }
+}
 
 dashboardRouter.get('/userDevices', validateToken, async (req, res) => {
     try {
@@ -182,13 +224,22 @@ dashboardRouter.post('/updateWifi', validateToken, validateRequest(updateWifiVal
 dashboardRouter.post('/updateAuto', validateToken, validateRequest(updateAutoValidation), async (req, res) => {
     const { device_id, automate } = req.body;
 
+    const desiredState = {
+        auto: automate,
+    };
+
     try {
-        const updatedDevice = await updateDeviceAuto(device_id, automate);
-        if (!updatedDevice) {
-            return res.status(400).json({ message: 'Error updating device auto' });
+        
+        const device = await getUserDevice(device_id);
+
+        if (!device) {
+            return res.status(400).json({ message: 'Error getting device info' });
         }
 
+        await updateDeviceShadow(device.thing_name,desiredState);
+
         return res.status(201).json({ message: 'The device auto has been updated!' });
+
     } catch (error) {
         handleErrors(res, error, 'Error updating device auto');
     }
@@ -198,50 +249,38 @@ dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValida
     const { thingName, shadowAuto } = req.body;
 
     try {
-        const factoryDevice = await getThingFactoryDevice(thingName);
-        if (!factoryDevice) {
-            return res.status(500).json({ message: 'Error finding device thing' });
-        }
 
-        const userDevice = await getDevice(factoryDevice.cat_num);
+        const userDevice = await getDeviceThing(thingName);
+
         if (!userDevice) {
             return res.status(500).json({ message: 'Error finding user device' });
         }
         
-        emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_auto: shadowAuto });
+        emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, thing_name: thingName, shadow_auto: shadowAuto });
         return res.status(201).json({ message: 'Shadow auto update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send auto shadow to');
     }
 });
 
-dashboardRouter.post('/shadowUpdateConnection', validateRequest(shadowUpdateConnectionValidation), async (req, res) => {
-    const { thingName, shadowConnection } = req.body;
+dashboardRouter.post('/presenceUpdateConnection', validateRequest(presenceUpdateConnectionValidation), async (req, res) => {
+    const { thingName, presenceConnection } = req.body;
 
     try {
 
-        const factoryDevice = await getThingFactoryDevice(thingName);
-
-        if (!factoryDevice) {
-            return res.status(500).json({ message: 'Error finding device thing' });
-        }
-
-        const userDevice = await getDevice(factoryDevice.cat_num);
+        const userDevice = await getDeviceThing(thingName);
 
         if (!userDevice) {
             return res.status(500).json({ message: 'Error finding user device' });
         }
 
-        const updatedUserDevice = await updateDeviceShadowConnection(userDevice.device_id,shadowConnection);
+        const updatedDevice = await updatePresenceConnection(userDevice.device_id,presenceConnection);
 
-        const dbShadowConnection = Number(updatedUserDevice.shadow_connection);
-        const inputShadowConnection = shadowConnection ? 1 : 0;
-
-        if (dbShadowConnection !== inputShadowConnection? 1 : 0){
-            return res.status(500).json({ message: 'Error updating device connection in database'});
+        if (!updatedDevice || updatedDevice.presence_connection !== presenceConnection) {
+            return res.status(400).json({ message: 'Error updating device presenc connection' });
         }
         
-        emitToUser(userDevice.user_id, 'shadowUpdateConnection', { device: updatedUserDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_connection: shadowConnection });
+        emitToUser(userDevice.user_id, 'presenceUpdateConnection', { device: updatedDevice, thing_name: thingName, presence_connection: presenceConnection });
         return res.status(201).json({ message: 'Shadow connection update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send connection shadow to');
@@ -249,50 +288,57 @@ dashboardRouter.post('/shadowUpdateConnection', validateRequest(shadowUpdateConn
 });
 
 dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidation), async (req, res) => {
+    
     const { device_id, pump_water } = req.body;
 
+    const desiredState = {
+        pump: pump_water,
+    };
+
     try {
-        const updatedDevice = await updateDevicePumpWater(device_id, pump_water);
-        if (!updatedDevice) {
-            return res.status(400).json({ message: 'Error updating device pump water' });
+        const device = await getUserDevice(device_id);
+
+        if (!device) {
+            return res.status(400).json({ message: 'Error getting device info' });
         }
 
-        return res.status(201).json({ message: 'The device pump water has been updated!' });
+        await updateDeviceShadow(device.thing_name,desiredState);
+
+        return res.status(201).json({ message: 'The device auto has been updated!' });
+
     } catch (error) {
-        handleErrors(res, error, 'Error updating device pump water');
+        handleErrors(res, error, 'Error updating device auto');
     }
 });
+
 
 dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpWaterValidation), async (req, res) => {
     const { thingName, shadowPump } = req.body;
 
     try {
 
-        const factoryDevice = await getThingFactoryDevice(thingName);
-
-        if (!factoryDevice) {
-            return res.status(500).json({ message: 'Error finding device thing' });
-        }
-
-        const userDevice = await getDevice(factoryDevice.cat_num);
+        const userDevice = await getDeviceThing(thingName);
 
         if (!userDevice) {
             return res.status(500).json({ message: 'Error finding user device' });
         }
-
-        const updatedUserDevice = await updateDevicePumpWater(userDevice.device_id,shadowPump);
-
-        const dbShadowPump = Number(updatedUserDevice.shadow_pump);
-        const inputShadowPump = shadowPump ? 1 : 0;
-
-        if (dbShadowPump !== inputShadowPump? 1 : 0){
-            return res.status(500).json({ message: 'Error updating device pump water in database'});
-        }
         
-        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: updatedUserDevice, factoryDevice: factoryDevice, thing_name: thingName, shadow_pump: shadowPump });
+        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
         return res.status(201).json({ message: 'Shadow pump water update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send pump water shadow update to');
+    }
+});
+
+dashboardRouter.get('/deviceShadow', validateToken, validateRequest(deviceShadowValidation), async (req, res) => {
+    const thingName = req.query.thingName;
+
+    try {
+        const deviceShadow = await getDeviceShadow(thingName);
+
+        return res.send({ error: false, deviceShadow: deviceShadow, devicePresence: devicePresence, message: 'Fetched Shadow Successfully.' });
+    } catch (error) {
+        handleErrors(res, error, 'Error fetching device shadow');
     }
 });
 
