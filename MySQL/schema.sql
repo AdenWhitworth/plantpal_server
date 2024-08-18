@@ -46,12 +46,6 @@ CREATE TABLE devices (
 INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
 VALUES("A1B2C3", 1, "testssid", "testpassword", false, false, "kitchen");
 
-INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
-VALUES("A2B3C4", 1, "test", "password", false, false, "livingroom");
-
-INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, connection_status, automate, location)
-VALUES("A3B4C5", 1, "test", "password", false, false, "bedroom");
-
 DELETE FROM devices
 WHERE cat_num = "A4B5C6";
 

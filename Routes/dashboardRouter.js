@@ -194,7 +194,7 @@ dashboardRouter.post('/addDevice', validateToken, validateRequest(addDeviceValid
         }
 
         const hashWifi = encrypt(wifi_password);
-        const newDevice = await addUserDevice(cat_num, req.user.user_id, wifi_ssid, hashWifi.content, hashWifi.iv, false, false, location);
+        const newDevice = await addUserDevice(cat_num, req.user.user_id, wifi_ssid, hashWifi.content, hashWifi.iv, false, location, factoryDevices.thing_name);
         if (!newDevice) {
             return res.status(400).json({ message: 'Error creating new device' });
         }
