@@ -276,8 +276,8 @@ dashboardRouter.post('/presenceUpdateConnection', validateRequest(presenceUpdate
 
         const updatedDevice = await updatePresenceConnection(userDevice.device_id,presenceConnection);
 
-        if (!updatedDevice || updatedDevice.presence_connection !== presenceConnection) {
-            return res.status(400).json({ message: 'Error updating device presenc connection' });
+        if (!updatedDevice || Boolean(updatedDevice.presence_connection) !== presenceConnection) {
+            return res.status(400).json({ message: 'Error updating device presence connection' });
         }
         
         emitToUser(userDevice.user_id, 'presenceUpdateConnection', { device: updatedDevice, thing_name: thingName, presence_connection: presenceConnection });
