@@ -125,13 +125,20 @@ const deviceShadowValidation = [
 
 const handleErrors = (res, err, msg) => res.status(500).json({ message: msg, error: err.message });
 
-const updateDeviceShadow = async (thingName,desiredState) => {
+const updateDeviceShadow = async (thingName,desiredState,reportedState) => {
+    const state = {
+        desired: desiredState
+    };
+
+    if (reportedState !== null) {
+        state.reported = reportedState;
+    }
+
+    
     const params = {
         thingName: thingName,
         payload: JSON.stringify({
-            state: {
-            desired: desiredState
-            }
+            state: state
         })
     };
 
@@ -236,7 +243,7 @@ dashboardRouter.post('/updateAuto', validateToken, validateRequest(updateAutoVal
             return res.status(400).json({ message: 'Error getting device info' });
         }
 
-        await updateDeviceShadow(device.thing_name,desiredState);
+        await updateDeviceShadow(device.thing_name,desiredState,null);
 
         return res.status(201).json({ message: 'The device auto has been updated!' });
 
@@ -302,7 +309,7 @@ dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidati
             return res.status(400).json({ message: 'Error getting device info' });
         }
 
-        await updateDeviceShadow(device.thing_name,desiredState);
+        await updateDeviceShadow(device.thing_name,desiredState,null);
 
         return res.status(201).json({ message: 'The device auto has been updated!' });
 
@@ -313,9 +320,19 @@ dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidati
 
 
 dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpWaterValidation), async (req, res) => {
-    const { thingName, shadowPump } = req.body;
+    const { thingName, shadowPump} = req.body;
 
     try {
+
+        const desiredState = {
+            pump: false,
+        };
+
+        const reportedState = {
+            pump: false
+        };
+
+        
 
         const userDevice = await getDeviceThing(thingName);
 
@@ -324,6 +341,11 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
         }
         
         emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
+
+        if (shadowPump) {
+            updateDeviceShadow(thingName,desiredState, reportedState);
+        }
+        
         return res.status(201).json({ message: 'Shadow pump water update received' });
     } catch (error) {
         handleErrors(res, error, 'No socket connection to send pump water shadow update to');
