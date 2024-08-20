@@ -336,7 +336,9 @@ dashboardRouter.get('/deviceShadow', validateToken, validateRequest(deviceShadow
     try {
         const deviceShadow = await getDeviceShadow(thingName);
 
-        return res.send({ error: false, deviceShadow: deviceShadow, message: 'Fetched Shadow Successfully.' });
+        const deviceShadowObject = JSON.parse(deviceShadow);
+
+        return res.send({ error: false, deviceShadow: deviceShadowObject, message: 'Fetched Shadow Successfully.' });
     } catch (error) {
         handleErrors(res, error, 'Error fetching device shadow');
     }
