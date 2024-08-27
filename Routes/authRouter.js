@@ -135,11 +135,27 @@ const refreshAccessTokenValidation = [
 
 const forgotPasswordValidation = [
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: true }),
+    check('x-api-key')
+        .custom((value, { req }) => {
+            if (value !== process.env.API_CLIENT_KEY) {
+                throw new Error('Invalid API key');
+            }
+            return true;
+        })
+        .withMessage('Forbidden')
 ];
 
 const resetPasswordValidation = [
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('resetToken', 'Reset token is required').not().isEmpty(),
+    check('x-api-key')
+        .custom((value, { req }) => {
+            if (value !== process.env.API_CLIENT_KEY) {
+                throw new Error('Invalid API key');
+            }
+            return true;
+        })
+        .withMessage('Forbidden')
 ];
 
 const forgotPasswordLimiter = rateLimit({

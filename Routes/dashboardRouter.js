@@ -26,20 +26,20 @@ AWS.config.update({
 
 const iotData = new AWS.IotData({ endpoint: process.env.AWS_IOT_ENDPOINT });
 
-const validateToken = (req, res, next) => {
+const validateAccessToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer')) {
-        return res.status(422).json({ message: 'Please provide the token' });
+        return res.status(422).json({ message: 'Please provide the access token' });
     }
 
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.SECRET_KEY, (err, authorizedData) => {
-        if (err) {
-            return res.status(422).json({ message: 'Please provide a valid token' });
-        }
-        req.user = authorizedData;
+    const accessToken = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(accessToken, process.env.AUTH_ACCESS_TOKEN_SECRET);
+        req.user = decoded;
         next();
-    });
+    } catch (err) {
+        return res.status(401).json({ message: 'Please provide a valid access token' });
+    }
 };
 
 const validateRequest = (validations) => {
@@ -164,7 +164,7 @@ const getDeviceShadow = async (thingName) => {
     }
 }
 
-dashboardRouter.get('/userDevices', validateToken, async (req, res) => {
+dashboardRouter.get('/userDevices', validateAccessToken, async (req, res) => {
     try {
         const devices = await getUserDevices(req.user.user_id);
         return res.send({ error: false, devices: devices || [], message: 'Fetch Successfully.' });
@@ -173,7 +173,7 @@ dashboardRouter.get('/userDevices', validateToken, async (req, res) => {
     }
 });
 
-dashboardRouter.get('/deviceLogs', validateToken, validateRequest(deviceLogsValidation), async (req, res) => {
+dashboardRouter.get('/deviceLogs', validateAccessToken, validateRequest(deviceLogsValidation), async (req, res) => {
     const cat_num = req.query.cat_num;
 
     try {
@@ -191,7 +191,7 @@ dashboardRouter.get('/deviceLogs', validateToken, validateRequest(deviceLogsVali
     }
 });
 
-dashboardRouter.post('/addDevice', validateToken, validateRequest(addDeviceValidation), async (req, res) => {
+dashboardRouter.post('/addDevice', validateAccessToken, validateRequest(addDeviceValidation), async (req, res) => {
     const { location, cat_num, wifi_ssid, wifi_password } = req.body;
 
     try {
@@ -212,7 +212,7 @@ dashboardRouter.post('/addDevice', validateToken, validateRequest(addDeviceValid
     }
 });
 
-dashboardRouter.post('/updateWifi', validateToken, validateRequest(updateWifiValidation), async (req, res) => {
+dashboardRouter.post('/updateWifi', validateAccessToken, validateRequest(updateWifiValidation), async (req, res) => {
     const { device_id, wifi_ssid, wifi_password } = req.body;
 
     try {
@@ -228,7 +228,7 @@ dashboardRouter.post('/updateWifi', validateToken, validateRequest(updateWifiVal
     }
 });
 
-dashboardRouter.post('/updateAuto', validateToken, validateRequest(updateAutoValidation), async (req, res) => {
+dashboardRouter.post('/updateAuto', validateAccessToken, validateRequest(updateAutoValidation), async (req, res) => {
     const { device_id, automate } = req.body;
 
     const desiredState = {
@@ -352,7 +352,7 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
     }
 });
 
-dashboardRouter.get('/deviceShadow', validateToken, validateRequest(deviceShadowValidation), async (req, res) => {
+dashboardRouter.get('/deviceShadow', validateAccessToken, validateRequest(deviceShadowValidation), async (req, res) => {
     const thingName = req.query.thingName;
 
     try {
