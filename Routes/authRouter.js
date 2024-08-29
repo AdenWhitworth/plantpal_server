@@ -84,11 +84,15 @@ const generateResetToken = async (user) => {
     const resetTokenSecret = crypto.randomBytes(10).toString("hex");
     const resetToken = `${resetTokenValue}+${resetTokenSecret}`;
 
-    const resetTokenExpiry = Date.now() + process.env.RESET_PASSWORD_TOKEN_EXPIRY_MINS * 60 * 1000;
+    const resetTokenExpiryTimestamp = Date.now() + process.env.RESET_PASSWORD_TOKEN_EXPIRY_MINS * 60 * 1000;
+
+    const resetTokenExpiryDate = new Date(resetTokenExpiryTimestamp);
+
+    const formattedResetTokenExpiry = resetTokenExpiryDate.toISOString().slice(0, 19).replace('T', ' ');
 
     const hashedResetToken = await bcrypt.hash(resetToken, 10);
 
-    await updateResetToken(user.user_id, hashedResetToken, resetTokenExpiry);
+    await updateResetToken(user.user_id, hashedResetToken, formattedResetTokenExpiry);
 
     return resetToken;
 }
@@ -146,6 +150,7 @@ const forgotPasswordValidation = [
 const resetPasswordValidation = [
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('resetToken', 'Reset token is required').not().isEmpty(),
+    check('user_id', 'User Id is required').not().isEmpty(),
     check('x-api-key')
         .custom((value, { req }) => {
             if (value !== process.env.API_CLIENT_KEY) {
@@ -282,9 +287,9 @@ authRouter.post('/forgotPassword', forgotPasswordLimiter, validateRequest(forgot
             return res.status(200).send({message: 'Reset password email sent successfully'});
         }
 
-        const resetToken = generateResetToken(user);
+        const resetToken = await generateResetToken(user);
 
-        const resetUrl = `${process.env.BASE_URL}/resetpassword?resetToken=${resetToken}&user_id=${user.user_id}`;
+        const resetUrl = `${process.env.BASE_URL}/resetPassword?resetToken=${resetToken}&user_id=${user.user_id}`;
 
         const mailOptions = {
             from: process.env.EMAIL_FROM,
@@ -306,12 +311,13 @@ authRouter.post('/forgotPassword', forgotPasswordLimiter, validateRequest(forgot
 
 });
 
-authRouter.post('/resetpassword', resetPasswordLimiter, validateRequest(resetPasswordValidation), async (req, res) => {
+authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPasswordValidation), async (req, res) => {
     const { password, resetToken, user_id } = req.body;
+    const correctToken = resetToken.replace(/%20/g, '+');
 
     try {
 
-        const [resetTokenValue, resetTokenSecret] = token.split('+');
+        const [resetTokenValue, resetTokenSecret] = correctToken.split('+');
         if (!resetTokenValue || !resetTokenSecret) {
             return res.status(400).json({ message: 'Invalid or expired token' });
         }
@@ -321,8 +327,10 @@ authRouter.post('/resetpassword', resetPasswordLimiter, validateRequest(resetPas
             return res.status(400).json({ message: 'Invalid or expired token' });
         }
 
-        const isMatch = await bcrypt.compare(resetToken, user.reset_token);
-        if (!isMatch || Date.now() > user.reset_token_expiry) {
+        const resetTokenExpiryTimestamp = new Date(user.reset_token_expiry).getTime();
+
+        const isMatch = await bcrypt.compare(correctToken, user.reset_token);
+        if (!isMatch || Date.now() > resetTokenExpiryTimestamp) {
             return res.status(400).json({ message: 'Invalid or expired token' });
         }
 
@@ -335,7 +343,7 @@ authRouter.post('/resetpassword', resetPasswordLimiter, validateRequest(resetPas
 
         const mailOptions = {
             from: process.env.EMAIL_FROM,
-            to: email,
+            to: user.email,
             subject: 'PlantPal Password Changed',
             html: message
         };
