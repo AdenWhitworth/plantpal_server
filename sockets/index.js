@@ -7,25 +7,26 @@ let io;
 function initSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: '*',
-      methods: ['GET', 'POST']
+      origin: process.env.BASE_URL,
+      methods: ['GET', 'POST'],
+      credentials: true,
     }
   });
 }
 
 const validateToken = async (socket, next) => {
 
-  const token = socket.handshake.auth.token;
+  const accessToken = socket.handshake.auth.token;
   
-  if (!token) {
+  if (!accessToken) {
     return next(new Error('Authentication error'));
   }
 
-  if (token.startsWith('Bearer ')) {
-    token = token.split(' ')[1];
+  if (accessToken.startsWith('Bearer ')) {
+    accessToken = accessToken.split(' ')[1];
   }
   
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+  jwt.verify(accessToken, process.env.AUTH_ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
           return next(new Error('Authentication error'));
       }

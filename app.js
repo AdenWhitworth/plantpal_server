@@ -5,13 +5,18 @@ import {authRouter} from './Routes/authRouter.js';
 import {dashboardRouter} from './Routes/dashboardRouter.js';
 import { initSocket, connectSocket } from './Sockets/index.js';
 import http from 'http';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const server = http.createServer(app);
 
 initSocket(server);
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.BASE_URL,
+  credentials: true,
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());
 

@@ -18,12 +18,18 @@ CREATE TABLE users (
   UNIQUE KEY (email)
  ) ENGINE=InnoDB;
  
+DELETE FROM users
+WHERE user_id = 1;
+ 
  USE plantpal_app;
  SELECT * FROM users;
  
 USE plantpal_app; 
 ALTER TABLE users
 ADD COLUMN socket_id VARCHAR(255);
+
+ USE plantpal_app;
+ DROP TABLE users;
 
 /* Devices Table */
 

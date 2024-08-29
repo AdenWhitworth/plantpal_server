@@ -83,6 +83,16 @@ export async function updateRefreshToken(user_id, refreshToken){
     return getUserById(user_id);
 }
 
+export async function updateResetToken(user_id, resetToken, resetTokenExpiry){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET reset_token = ?, reset_token_expiry = ?
+        WHERE user_id = ?
+    `, [resetToken, resetTokenExpiry, user_id]);
+    
+    return getUserById(user_id);
+}
+
 export async function clearResetToken(user_id){
     const [result] = await pool.query(`
         UPDATE users

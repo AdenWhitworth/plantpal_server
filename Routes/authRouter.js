@@ -1,6 +1,6 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { check, validationResult } from 'express-validator';
+import { check, validationResult, cookie } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -52,7 +52,7 @@ const generateAccessToken = (user) => {
     }, 
     process.env.AUTH_ACCESS_TOKEN_SECRET, 
     { 
-        expiresIn: process.envAUTH_ACCESS_TOKEN_EXPIRY 
+        expiresIn: process.env.AUTH_ACCESS_TOKEN_EXPIRY 
     });
 
     return accessToken;
@@ -71,7 +71,7 @@ const generateRefreshToken = async (user) => {
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
         await updateRefreshToken(user.user_id, hashedRefreshToken);
-    
+
         return refreshToken;
     
     } catch (error) {
@@ -128,9 +128,7 @@ const updateUserValidation = [
 ];
 
 const refreshAccessTokenValidation = [
-    check('cookies.refreshToken')
-        .exists({ checkFalsy: true }).withMessage('Refresh token not found, please login again')
-        .isString().withMessage('Refresh token must be a string'),
+    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty')
 ];
 
 const forgotPasswordValidation = [
@@ -206,8 +204,8 @@ authRouter.post('/login', validateRequest(loginValidation), async (req, res) => 
             return res.status(401).send({ message: 'Email or password is incorrect!' });
         }
 
-        const accessToken = generateAccessToken(updatedUser.user_id);
-        const refreshToken = await generateRefreshToken(updatedUser.user_id);
+        const accessToken = generateAccessToken(user);
+        const refreshToken = await generateRefreshToken(user);
         const updatedUser = await updateLastLoginTime(user.user_id);
 
         if (!updatedUser) {
@@ -253,7 +251,7 @@ authRouter.post('/refreshAccessToken', validateRequest(refreshAccessTokenValidat
     }
 
     try {
-        const { user_id } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const { user_id } = jwt.verify(refreshToken, process.env.AUTH_REFRESH_TOKEN_SECRET);
         
         const user = await getUserById(user_id);
         
