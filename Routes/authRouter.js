@@ -100,7 +100,7 @@ const generateResetToken = async (user) => {
 const registerValidation = [
     check('first_name', 'First name is required').not().isEmpty(),
     check('last_name', 'Last name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail().normalizeEmail(),
+    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('x-api-key')
         .custom((value, { req }) => {
@@ -113,7 +113,7 @@ const registerValidation = [
 ];
 
 const loginValidation = [
-    check('email', 'Please include a valid email').isEmail().normalizeEmail(),
+    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('x-api-key')
         .custom((value, { req }) => {
@@ -128,7 +128,7 @@ const loginValidation = [
 const updateUserValidation = [
     check('first_name', 'First name is required').not().isEmpty(),
     check('last_name', 'Last name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail().normalizeEmail(),
+    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
 ];
 
 const refreshAccessTokenValidation = [
@@ -136,7 +136,7 @@ const refreshAccessTokenValidation = [
 ];
 
 const forgotPasswordValidation = [
-    check('email', 'Please include a valid email').isEmail().normalizeEmail(),
+    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
     check('x-api-key')
         .custom((value, { req }) => {
             if (value !== process.env.API_CLIENT_KEY) {
