@@ -100,7 +100,7 @@ const generateResetToken = async (user) => {
 const registerValidation = [
     check('first_name', 'First name is required').not().isEmpty(),
     check('last_name', 'Last name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: true }),
+    check('email', 'Please include a valid email').isEmail().normalizeEmail(),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('x-api-key')
         .custom((value, { req }) => {

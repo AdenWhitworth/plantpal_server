@@ -19,7 +19,7 @@ CREATE TABLE users (
  ) ENGINE=InnoDB;
  
 DELETE FROM users
-WHERE user_id = 1;
+WHERE user_id = 3;
  
  USE plantpal_app;
  SELECT * FROM users;
