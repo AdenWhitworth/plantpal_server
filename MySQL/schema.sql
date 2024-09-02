@@ -9,11 +9,17 @@ CREATE TABLE users (
   last_name varchar(50) NOT NULL,
   email varchar(50) NOT NULL,
   password varchar(200) NOT NULL,
+  refresh_token varchar(255),
+  reset_token_expiry DATETIME(0),
+  reset_token varchar(255),
   last_login DATETIME(0),
   socket_id VARCHAR(255),
   PRIMARY KEY (user_id),
   UNIQUE KEY (email)
  ) ENGINE=InnoDB;
+ 
+DELETE FROM users
+WHERE user_id = 6;
  
  USE plantpal_app;
  SELECT * FROM users;
@@ -21,6 +27,9 @@ CREATE TABLE users (
 USE plantpal_app; 
 ALTER TABLE users
 ADD COLUMN socket_id VARCHAR(255);
+
+ USE plantpal_app;
+ DROP TABLE users;
 
 /* Devices Table */
 

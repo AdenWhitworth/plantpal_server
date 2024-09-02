@@ -63,6 +63,46 @@ export async function updateUserInfo(user_id, first_name , last_name, email){
     return getUserById(user_id);
 }
 
+export async function updateUserPassword(user_id, password){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET password = ?
+        WHERE user_id = ?
+    `, [password, user_id]);
+    
+    return getUserById(user_id);
+}
+
+export async function updateRefreshToken(user_id, refreshToken){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET refresh_token = ?
+        WHERE user_id = ?
+    `, [refreshToken, user_id]);
+    
+    return getUserById(user_id);
+}
+
+export async function updateResetToken(user_id, resetToken, resetTokenExpiry){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET reset_token = ?, reset_token_expiry = ?
+        WHERE user_id = ?
+    `, [resetToken, resetTokenExpiry, user_id]);
+    
+    return getUserById(user_id);
+}
+
+export async function clearResetToken(user_id){
+    const [result] = await pool.query(`
+        UPDATE users
+        SET reset_token = NULL, reset_token_expiry = NULL
+        WHERE user_id = ?
+    `, [user_id]);
+    
+    return getUserById(user_id);
+}
+
 export async function getUserDevices(user_id){
     const [rows] = await pool.query(`
         SELECT *
