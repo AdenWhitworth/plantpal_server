@@ -22,10 +22,21 @@ const authRouter = express.Router();
 const validateRequest = (validations) => {
     return async (req, res, next) => {
         await Promise.all(validations.map(validation => validation.run(req)));
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ message: errors.array() });
+            const errorObject = {};
+            errors.array().forEach(error => {
+                if (error.path) {
+                    errorObject[error.path] = error.msg;
+                } else {
+                    console.error('Missing param in validation error:', error);
+                }
+            });
+
+            return res.status(422).json({ errors: errorObject });
         }
+
         next();
     };
 };
