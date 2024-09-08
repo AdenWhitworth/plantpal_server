@@ -1,12 +1,20 @@
-import nodemailer from 'nodemailer';
+import nodemailer, {SentMessageInfo} from 'nodemailer';
 
-export async function sendEmail (mailOptions){
+interface MailOptions {
+    from: string;
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+}
+
+export async function sendEmail (mailOptions: MailOptions): Promise<SentMessageInfo>{
     var transporter = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
         port: 2525,
         auth: {
-          user: process.env.AUTH_EMAIL_USERNAME,
-          pass: process.env.AUTH_EMAIL_PASSWORD
+          user: process.env.AUTH_EMAIL_USERNAME as string,
+          pass: process.env.AUTH_EMAIL_PASSWORD as string
         }
     });
 
