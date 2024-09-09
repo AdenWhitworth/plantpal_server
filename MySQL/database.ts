@@ -139,7 +139,7 @@ export async function getUserDevice(device_id: number): Promise<Device | undefin
     return (rows as Device[])[0];
 }
 
-export async function addUserDevice(cat_num: string, user_id: number, wifi_ssid: string, wifi_password: string, init_vec: string, presence_connection: string, location: string, thing_name: string): Promise<Device | undefined> {
+export async function addUserDevice(cat_num: string, user_id: number, wifi_ssid: string, wifi_password: string, init_vec: string, presence_connection: boolean, location: string, thing_name: string): Promise<Device | undefined> {
     const [result] = await pool.query<ResultSetHeader>(
         `INSERT INTO devices (cat_num, user_id, wifi_ssid, wifi_password, init_vec, presence_connection, location, thing_name) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`,
         [cat_num, user_id, wifi_ssid, wifi_password, init_vec, presence_connection, location, thing_name]
@@ -181,7 +181,7 @@ export async function getLastDeviceLog(cat_num: string): Promise<any | undefined
     return rows[0];
 }
 
-export async function updateUserSocketId(user_id: number, socket_id: string): Promise<User | undefined> {
+export async function updateUserSocketId(user_id: number, socket_id: string | null): Promise<User | undefined> {
     await pool.query(
         `UPDATE users SET socket_id = ? WHERE user_id = ?`,
         [socket_id, user_id]
