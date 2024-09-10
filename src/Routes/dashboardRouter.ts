@@ -173,7 +173,7 @@ const updateDeviceShadow = async (thingName: string, desiredState: DesiredState,
     try {
         const response = await iotData.updateThingShadow(params).promise();
         const data = JSON.parse(response.payload as string); 
-        return data.payload as JSON;
+        return data;
       } catch (error) {
         throw new Error('Failed to update device shadow.');
       }
@@ -187,7 +187,7 @@ const getDeviceShadow = async (thingName: string): Promise<any> => {
     try {
         const response = await iotData.getThingShadow(params).promise();
         const data = JSON.parse(response.payload as string); 
-        return data.payload as JSON;
+        return data;
     } catch(error){
         throw new Error('Failed to get device shadow.');
     }
