@@ -53,7 +53,6 @@ const validateAccessToken = async (req: AccessTokenRequest, res: Response, next:
         }
         
     } catch (error) {
-        console.log(error);
         errorHandler(error as CustomError, res);
     }
 };
