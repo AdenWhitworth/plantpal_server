@@ -169,7 +169,7 @@ async function emitToUser(user_id: number, eventName: string, data: any): Promis
 
     io.to(user.socket_id).emit(eventName, data);
   } catch (error) {
-    console.error(`Error emitting to user ${user_id}:`, error);
+    throw new Error(`Error emitting to user ${user_id}`);
   }
 }
 

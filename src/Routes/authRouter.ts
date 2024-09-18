@@ -26,7 +26,7 @@ const validateRequest = (validations: ValidationChain[]): ValidationMiddleware =
         if (!errors.isEmpty()) {
             const errorObject: Record<string, string> = {};
 
-            errors.array().forEach((error: any) => {  // Use 'any' to bypass the type error
+            errors.array().forEach((error: any) => {
                 if (error.path) {
                     errorObject[error.path] = error.msg;
                 } else {
@@ -71,7 +71,6 @@ const apiKeyValidation = check('x-api-key')
         }
         return true;
     })
-    .withMessage('Forbidden');
 
 const registerValidation: ValidationChain[] = [
     check('first_name', 'First name is required').not().isEmpty(),
@@ -94,7 +93,8 @@ const updateUserValidation: ValidationChain[] = [
 ];
 
 const refreshAccessTokenValidation: ValidationChain[] = [
-    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty')
+    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty'),
+    apiKeyValidation
 ];
 
 const forgotPasswordValidation: ValidationChain[] = [

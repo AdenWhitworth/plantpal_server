@@ -36,6 +36,13 @@ interface DeviceLog {
     water: boolean;
 };
 
+interface FactoryDevice {
+    factory_id: number,
+    cat_num: string,
+    factory_date: string,
+    thing_name: string,
+}
+
 const pool = mysql.createPool({
     host: process.env.RDS_ENDPOINT,
     user: process.env.MYSQL_USER,
@@ -157,28 +164,28 @@ export async function updateDeviceWifi(device_id: number, wifi_ssid: string, wif
     return getUserDevice(device_id);
 }
 
-export async function getFactoryDevice(cat_num: string): Promise<Device | undefined> {
+export async function getFactoryDevice(cat_num: string): Promise<FactoryDevice | undefined> {
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT * FROM factoryDevices WHERE cat_num = ?`,
         [cat_num]
     );
-    return (rows as Device[])[0];
+    return (rows as FactoryDevice[])[0];
 }
 
-export async function getDeviceLogs(cat_num: string): Promise<any[]> {
+export async function getDeviceLogs(cat_num: string): Promise<DeviceLog[]> {
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT * FROM deviceLogs WHERE cat_num = ?`,
         [cat_num]
     );
-    return rows;
+    return rows as DeviceLog[];
 }
 
-export async function getLastDeviceLog(cat_num: string): Promise<any | undefined> {
+export async function getLastDeviceLog(cat_num: string): Promise<DeviceLog | undefined> {
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT * FROM deviceLogs WHERE cat_num = ? ORDER BY log_date DESC LIMIT 1`,
         [cat_num]
     );
-    return rows[0];
+    return (rows as DeviceLog[])[0];
 }
 
 export async function updateUserSocketId(user_id: number, socket_id: string | null): Promise<User | undefined> {
