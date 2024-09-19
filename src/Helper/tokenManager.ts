@@ -45,7 +45,6 @@ export const generateRefreshToken: GenerateRefreshTokenFunction = async (user: U
 
         return refreshToken;
     } catch (error) {
-        console.error('Error generating refresh token:', error);
         throw new Error('Error generating refresh token');
     }
 }
@@ -66,7 +65,6 @@ export const generateResetToken: GenerateResetTokenFunction = async (user: User)
 
         return resetToken;
     } catch (error) {
-        console.error('Error generating reset token:', error);
         throw new Error('Error generating reset token');
     }
 }
