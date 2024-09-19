@@ -43,7 +43,7 @@ interface FactoryDevice {
     thing_name: string,
 }
 
-const pool = mysql.createPool({
+export const pool = mysql.createPool({
     host: process.env.RDS_ENDPOINT,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
@@ -220,7 +220,7 @@ export async function getDeviceThing(thingName: string): Promise<Device | undefi
     return (rows as Device[])[0];
 }
 
-export async function updatePresenceConnection(device_id: number, presenceConnection: string): Promise<Device | undefined> {
+export async function updatePresenceConnection(device_id: number, presenceConnection: boolean): Promise<Device | undefined> {
     await pool.query(
         `UPDATE devices SET presence_connection = ? WHERE device_id = ?`,
         [presenceConnection, device_id]
