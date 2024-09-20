@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1726853904355" clover="3.2.0">
+  <project timestamp="1726853904355" name="All files">
+    <metrics statements="466" coveredstatements="435" conditionals="143" coveredconditionals="119" methods="80" coveredmethods="78" elements="689" coveredelements="632" complexity="0" loc="466" ncloc="466" packages="5" files="14" classes="14"/>
+    <package name="src">
+      <metrics statements="22" coveredstatements="22" conditionals="4" coveredconditionals="3" methods="3" coveredmethods="3"/>
+      <file name="app.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\app.ts">
+        <metrics statements="22" coveredstatements="22" conditionals="4" coveredconditionals="3" methods="3" coveredmethods="3"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
+        <line num="43" count="3" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="57" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="58" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="64" count="3" type="stmt"/>
+        <line num="65" count="3" type="stmt"/>
+        <line num="66" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.Helper">
+      <metrics statements="123" coveredstatements="123" conditionals="30" coveredconditionals="29" methods="21" coveredmethods="21"/>
+      <file name="callbackManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\callbackManager.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="30" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+      </file>
+      <file name="emailManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\emailManager.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+      </file>
+      <file name="errorManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\errorManager.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+        <line num="16" count="26" type="stmt"/>
+        <line num="17" count="26" type="stmt"/>
+        <line num="18" count="26" type="stmt"/>
+        <line num="19" count="26" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="33" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="34" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="40" count="31" type="stmt"/>
+      </file>
+      <file name="jwtManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\jwtManager.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="32" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+      </file>
+      <file name="myCrypto.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\myCrypto.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+      </file>
+      <file name="shadowManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\shadowManager.ts">
+        <metrics statements="19" coveredstatements="19" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="29" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="41" count="6" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+        <line num="43" count="3" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="57" count="3" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+      </file>
+      <file name="successManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\successManager.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="20" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="21" count="21" type="cond" truecount="1" falsecount="1"/>
+        <line num="23" count="21" type="stmt"/>
+      </file>
+      <file name="tokenManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\tokenManager.ts">
+        <metrics statements="21" coveredstatements="21" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="60" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="66" count="2" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+      </file>
+      <file name="validateRequestManager.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Helper\validateRequestManager.ts">
+        <metrics statements="44" coveredstatements="44" conditionals="14" coveredconditionals="14" methods="6" coveredmethods="6"/>
+        <line num="15" count="5" type="stmt"/>
+        <line num="17" count="35" type="cond" truecount="2" falsecount="0"/>
+        <line num="18" count="8" type="stmt"/>
+        <line num="20" count="27" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="43" count="5" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
+        <line num="67" count="5" type="stmt"/>
+        <line num="78" count="5" type="stmt"/>
+        <line num="89" count="5" type="stmt"/>
+        <line num="102" count="5" type="stmt"/>
+        <line num="112" count="5" type="stmt"/>
+        <line num="125" count="5" type="stmt"/>
+        <line num="137" count="5" type="stmt"/>
+        <line num="148" count="5" type="stmt"/>
+        <line num="160" count="5" type="stmt"/>
+        <line num="172" count="5" type="stmt"/>
+        <line num="183" count="5" type="stmt"/>
+        <line num="195" count="5" type="stmt"/>
+        <line num="204" count="5" type="stmt"/>
+        <line num="205" count="48" type="stmt"/>
+        <line num="206" count="165" type="stmt"/>
+        <line num="208" count="61" type="stmt"/>
+        <line num="209" count="61" type="cond" truecount="2" falsecount="0"/>
+        <line num="210" count="20" type="stmt"/>
+        <line num="212" count="20" type="stmt"/>
+        <line num="213" count="33" type="cond" truecount="2" falsecount="0"/>
+        <line num="214" count="32" type="stmt"/>
+        <line num="216" count="1" type="stmt"/>
+        <line num="220" count="20" type="stmt"/>
+        <line num="221" count="20" type="stmt"/>
+        <line num="224" count="41" type="stmt"/>
+        <line num="234" count="5" type="stmt"/>
+        <line num="235" count="26" type="stmt"/>
+        <line num="236" count="26" type="cond" truecount="4" falsecount="0"/>
+        <line num="237" count="1" type="stmt"/>
+        <line num="240" count="25" type="stmt"/>
+        <line num="241" count="25" type="stmt"/>
+        <line num="243" count="25" type="stmt"/>
+        <line num="244" count="23" type="cond" truecount="4" falsecount="0"/>
+        <line num="245" count="21" type="stmt"/>
+        <line num="246" count="21" type="stmt"/>
+        <line num="248" count="2" type="stmt"/>
+        <line num="252" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.MySQL">
+      <metrics statements="48" coveredstatements="48" conditionals="0" coveredconditionals="0" methods="22" coveredmethods="22"/>
+      <file name="database.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\MySQL\database.ts">
+        <metrics statements="48" coveredstatements="48" conditionals="0" coveredconditionals="0" methods="22" coveredmethods="22"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="47" count="9" type="stmt"/>
+        <line num="51" count="9" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="112" count="1" type="stmt"/>
+        <line num="122" count="1" type="stmt"/>
+        <line num="126" count="1" type="stmt"/>
+        <line num="137" count="1" type="stmt"/>
+        <line num="141" count="1" type="stmt"/>
+        <line num="150" count="1" type="stmt"/>
+        <line num="154" count="1" type="stmt"/>
+        <line num="163" count="1" type="stmt"/>
+        <line num="167" count="1" type="stmt"/>
+        <line num="176" count="4" type="stmt"/>
+        <line num="180" count="4" type="stmt"/>
+        <line num="196" count="1" type="stmt"/>
+        <line num="201" count="1" type="stmt"/>
+        <line num="202" count="1" type="stmt"/>
+        <line num="214" count="1" type="stmt"/>
+        <line num="218" count="1" type="stmt"/>
+        <line num="227" count="1" type="stmt"/>
+        <line num="231" count="1" type="stmt"/>
+        <line num="240" count="1" type="stmt"/>
+        <line num="244" count="1" type="stmt"/>
+        <line num="253" count="1" type="stmt"/>
+        <line num="257" count="1" type="stmt"/>
+        <line num="267" count="1" type="stmt"/>
+        <line num="271" count="1" type="stmt"/>
+        <line num="280" count="1" type="stmt"/>
+        <line num="284" count="1" type="stmt"/>
+        <line num="293" count="1" type="stmt"/>
+        <line num="297" count="1" type="stmt"/>
+        <line num="306" count="1" type="stmt"/>
+        <line num="310" count="1" type="stmt"/>
+        <line num="320" count="1" type="stmt"/>
+        <line num="324" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.Routes">
+      <metrics statements="201" coveredstatements="188" conditionals="77" coveredconditionals="65" methods="19" coveredmethods="19"/>
+      <file name="authRouter.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Routes\authRouter.ts">
+        <metrics statements="99" coveredstatements="92" conditionals="45" coveredconditionals="39" methods="8" coveredmethods="8"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="41" count="3" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="68" count="3" type="stmt"/>
+        <line num="69" count="2" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
+        <line num="72" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="77" count="1" type="stmt"/>
+        <line num="79" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="95" count="3" type="stmt"/>
+        <line num="96" count="3" type="stmt"/>
+        <line num="97" count="3" type="stmt"/>
+        <line num="98" count="3" type="stmt"/>
+        <line num="99" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="100" count="1" type="stmt"/>
+        <line num="103" count="2" type="stmt"/>
+        <line num="104" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="105" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="110" count="1" type="stmt"/>
+        <line num="112" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="116" count="1" type="stmt"/>
+        <line num="123" count="1" type="stmt"/>
+        <line num="125" count="2" type="stmt"/>
+        <line num="135" count="3" type="stmt"/>
+        <line num="136" count="3" type="stmt"/>
+        <line num="137" count="3" type="stmt"/>
+        <line num="139" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="140" count="1" type="stmt"/>
+        <line num="143" count="2" type="stmt"/>
+        <line num="145" count="2" type="cond" truecount="6" falsecount="0"/>
+        <line num="149" count="1" type="stmt"/>
+        <line num="152" count="1" type="stmt"/>
+        <line num="154" count="2" type="stmt"/>
+        <line num="164" count="3" type="stmt"/>
+        <line num="165" count="3" type="stmt"/>
+        <line num="167" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="168" count="0" type="stmt"/>
+        <line num="171" count="3" type="stmt"/>
+        <line num="173" count="3" type="stmt"/>
+        <line num="175" count="3" type="cond" truecount="3" falsecount="1"/>
+        <line num="176" count="0" type="stmt"/>
+        <line num="179" count="3" type="stmt"/>
+        <line num="181" count="3" type="stmt"/>
+        <line num="183" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="184" count="1" type="stmt"/>
+        <line num="187" count="2" type="stmt"/>
+        <line num="188" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="189" count="1" type="stmt"/>
+        <line num="192" count="1" type="stmt"/>
+        <line num="193" count="1" type="stmt"/>
+        <line num="196" count="2" type="stmt"/>
+        <line num="206" count="3" type="stmt"/>
+        <line num="207" count="2" type="stmt"/>
+        <line num="209" count="2" type="stmt"/>
+        <line num="210" count="2" type="stmt"/>
+        <line num="212" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="213" count="1" type="stmt"/>
+        <line num="216" count="1" type="stmt"/>
+        <line num="218" count="1" type="stmt"/>
+        <line num="220" count="1" type="stmt"/>
+        <line num="230" count="1" type="stmt"/>
+        <line num="232" count="1" type="stmt"/>
+        <line num="235" count="0" type="stmt"/>
+        <line num="246" count="3" type="stmt"/>
+        <line num="247" count="3" type="stmt"/>
+        <line num="248" count="3" type="stmt"/>
+        <line num="250" count="3" type="stmt"/>
+        <line num="252" count="3" type="stmt"/>
+        <line num="253" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="254" count="2" type="stmt"/>
+        <line num="257" count="1" type="stmt"/>
+        <line num="258" count="1" type="cond" truecount="4" falsecount="1"/>
+        <line num="259" count="0" type="stmt"/>
+        <line num="262" count="1" type="stmt"/>
+        <line num="264" count="1" type="stmt"/>
+        <line num="266" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="267" count="0" type="stmt"/>
+        <line num="270" count="1" type="stmt"/>
+        <line num="272" count="1" type="stmt"/>
+        <line num="273" count="1" type="stmt"/>
+        <line num="275" count="1" type="stmt"/>
+        <line num="277" count="1" type="stmt"/>
+        <line num="284" count="1" type="stmt"/>
+        <line num="286" count="1" type="stmt"/>
+        <line num="289" count="2" type="stmt"/>
+        <line num="300" count="3" type="stmt"/>
+        <line num="301" count="1" type="stmt"/>
+        <line num="302" count="1" type="stmt"/>
+        <line num="311" count="3" type="stmt"/>
+        <line num="312" count="1" type="stmt"/>
+      </file>
+      <file name="dashboardRouter.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\Routes\dashboardRouter.ts">
+        <metrics statements="102" coveredstatements="96" conditionals="32" coveredconditionals="26" methods="11" coveredmethods="11"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="41" count="3" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="61" count="3" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="80" count="3" type="stmt"/>
+        <line num="81" count="3" type="stmt"/>
+        <line num="83" count="3" type="stmt"/>
+        <line num="84" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="88" count="3" type="stmt"/>
+        <line num="89" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="93" count="2" type="stmt"/>
+        <line num="94" count="2" type="stmt"/>
+        <line num="95" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="96" count="1" type="stmt"/>
+        <line num="99" count="1" type="stmt"/>
+        <line num="101" count="2" type="stmt"/>
+        <line num="112" count="3" type="stmt"/>
+        <line num="113" count="2" type="stmt"/>
+        <line num="115" count="2" type="stmt"/>
+        <line num="116" count="2" type="stmt"/>
+        <line num="117" count="2" type="stmt"/>
+        <line num="118" count="2" type="cond" truecount="4" falsecount="0"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="122" count="1" type="stmt"/>
+        <line num="124" count="1" type="stmt"/>
+        <line num="135" count="3" type="stmt"/>
+        <line num="136" count="3" type="stmt"/>
+        <line num="138" count="3" type="stmt"/>
+        <line num="142" count="3" type="stmt"/>
+        <line num="144" count="3" type="stmt"/>
+        <line num="146" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="147" count="1" type="stmt"/>
+        <line num="150" count="2" type="stmt"/>
+        <line num="152" count="1" type="stmt"/>
+        <line num="155" count="2" type="stmt"/>
+        <line num="166" count="3" type="stmt"/>
+        <line num="167" count="3" type="stmt"/>
+        <line num="169" count="3" type="stmt"/>
+        <line num="171" count="3" type="stmt"/>
+        <line num="173" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="174" count="1" type="stmt"/>
+        <line num="177" count="2" type="stmt"/>
+        <line num="178" count="1" type="stmt"/>
+        <line num="180" count="2" type="stmt"/>
+        <line num="191" count="3" type="stmt"/>
+        <line num="192" count="3" type="stmt"/>
+        <line num="194" count="3" type="stmt"/>
+        <line num="196" count="3" type="stmt"/>
+        <line num="198" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="199" count="1" type="stmt"/>
+        <line num="202" count="2" type="stmt"/>
+        <line num="204" count="2" type="cond" truecount="3" falsecount="1"/>
+        <line num="205" count="0" type="stmt"/>
+        <line num="208" count="2" type="stmt"/>
+        <line num="209" count="1" type="stmt"/>
+        <line num="211" count="2" type="stmt"/>
+        <line num="222" count="3" type="stmt"/>
+        <line num="224" count="3" type="stmt"/>
+        <line num="226" count="3" type="stmt"/>
+        <line num="230" count="3" type="stmt"/>
+        <line num="231" count="3" type="stmt"/>
+        <line num="233" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="234" count="1" type="stmt"/>
+        <line num="237" count="2" type="stmt"/>
+        <line num="239" count="1" type="stmt"/>
+        <line num="242" count="2" type="stmt"/>
+        <line num="253" count="3" type="stmt"/>
+        <line num="254" count="4" type="stmt"/>
+        <line num="256" count="4" type="stmt"/>
+        <line num="258" count="4" type="stmt"/>
+        <line num="262" count="4" type="stmt"/>
+        <line num="266" count="4" type="stmt"/>
+        <line num="268" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="269" count="1" type="stmt"/>
+        <line num="272" count="3" type="stmt"/>
+        <line num="274" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="275" count="2" type="stmt"/>
+        <line num="278" count="1" type="stmt"/>
+        <line num="280" count="3" type="stmt"/>
+        <line num="291" count="3" type="stmt"/>
+        <line num="292" count="2" type="stmt"/>
+        <line num="294" count="2" type="stmt"/>
+        <line num="295" count="2" type="stmt"/>
+        <line num="297" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="298" count="0" type="stmt"/>
+        <line num="301" count="1" type="stmt"/>
+        <line num="303" count="1" type="stmt"/>
+        <line num="313" count="3" type="stmt"/>
+        <line num="314" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.sockets">
+      <metrics statements="72" coveredstatements="54" conditionals="32" coveredconditionals="22" methods="15" coveredmethods="13"/>
+      <file name="index.ts" path="C:\Users\julie\OneDrive\Documents\Software Engineer Portfolio\plantpal_server\src\sockets\index.ts">
+        <metrics statements="72" coveredstatements="54" conditionals="32" coveredconditionals="22" methods="15" coveredmethods="13"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="38" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="44" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="45" count="2" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="50" count="2" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="52" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="72" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="76" count="2" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="80" count="2" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+        <line num="99" count="1" type="stmt"/>
+        <line num="101" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="105" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="106" count="0" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="110" count="1" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
+        <line num="124" count="1" type="stmt"/>
+        <line num="125" count="1" type="stmt"/>
+        <line num="126" count="1" type="stmt"/>
+        <line num="128" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="129" count="0" type="stmt"/>
+        <line num="132" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="133" count="1" type="stmt"/>
+        <line num="136" count="1" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="150" count="2" type="stmt"/>
+        <line num="151" count="2" type="stmt"/>
+        <line num="152" count="2" type="stmt"/>
+        <line num="154" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="155" count="1" type="stmt"/>
+        <line num="158" count="0" type="stmt"/>
+        <line num="170" count="3" type="stmt"/>
+        <line num="171" count="3" type="stmt"/>
+        <line num="172" count="3" type="stmt"/>
+        <line num="174" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="175" count="1" type="stmt"/>
+        <line num="176" count="1" type="stmt"/>
+        <line num="179" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="180" count="1" type="stmt"/>
+        <line num="181" count="1" type="stmt"/>
+        <line num="182" count="1" type="stmt"/>
+        <line num="185" count="1" type="stmt"/>
+        <line num="187" count="0" type="stmt"/>
+        <line num="199" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="200" count="0" type="stmt"/>
+        <line num="202" count="1" type="stmt"/>
+        <line num="215" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="216" count="0" type="stmt"/>
+        <line num="219" count="2" type="stmt"/>
+        <line num="220" count="2" type="stmt"/>
+        <line num="222" count="2" type="cond" truecount="4" falsecount="0"/>
+        <line num="223" count="1" type="stmt"/>
+        <line num="226" count="1" type="stmt"/>
+        <line num="228" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

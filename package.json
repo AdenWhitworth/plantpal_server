@@ -4,6 +4,7 @@
   "main": "app.ts",
   "scripts": {
     "test": "jest",
+    "coverage": "jest --coverage",
     "dev": "nodemon",
     "type-docs": "typedoc"
   },
