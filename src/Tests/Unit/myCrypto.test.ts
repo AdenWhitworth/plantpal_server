@@ -1,8 +1,17 @@
+/**
+ * @module MyCryptoTests
+ */
 import crypto from 'crypto';
 import { encrypt, decrypt } from '../../Helper/myCrypto';
 
+/**
+ * Mocking the crypto.
+ */
 jest.mock('crypto');
 
+/**
+ * Test suite for encryption and decryption functions.
+ */
 describe('Encryption and Decryption', () => {
     const mockText = 'Hello, World!';
     const mockIv = Buffer.from('mock_iv_value_16_bytes');
@@ -23,7 +32,14 @@ describe('Encryption and Decryption', () => {
         jest.clearAllMocks();
     });
 
+    /**
+     * Test suite for the `encrypt` function.
+     */
     describe('encrypt', () => {
+        /**
+         * Test case for encrypting text.
+         * It verifies that the given text is encrypted and the correct data is returned.
+         */
         it('should encrypt the given text and return encrypted data', () => {
             (crypto.randomBytes as jest.Mock).mockReturnValue(mockIv);
             const mockCipher = {
@@ -41,7 +57,14 @@ describe('Encryption and Decryption', () => {
         });
     });
 
+    /**
+     * Test suite for the `decrypt` function.
+     */
     describe('decrypt', () => {
+        /**
+         * Test case for decrypting data.
+         * It verifies that the given hash is decrypted and the original text is returned.
+         */
         it('should decrypt the given hash and return the original text', () => {
             const mockDecipher = {
                 update: jest.fn().mockReturnValue(mockDecryptedBuffer),

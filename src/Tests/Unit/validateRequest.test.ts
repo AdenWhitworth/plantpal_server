@@ -1,7 +1,13 @@
+/**
+ * @module ValidateRequestTests
+ */
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, ValidationChain, check } from 'express-validator';
 import { validateRequest } from '../../Helper/validateRequestManager';
 
+/**
+ * Mocking the express-validator.
+ */
 jest.mock('express-validator', () => {
     return {
         check: jest.fn(() => {
@@ -41,6 +47,9 @@ jest.mock('express-validator', () => {
     };
 });
 
+/**
+ * Test suite for the validateRequest middleware function.
+ */
 describe('validateRequest middleware', () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
@@ -64,6 +73,10 @@ describe('validateRequest middleware', () => {
         (check as jest.Mock).mockClear();
     });
 
+    /**
+     * Test case for handling successful validation.
+     * It verifies that the next function is called if there are no validation errors.
+     */
     it('should call next() if there are no validation errors', async () => {
         (validationResult as unknown as jest.Mock).mockReturnValueOnce({
             isEmpty: jest.fn().mockReturnValue(true),
@@ -78,6 +91,10 @@ describe('validateRequest middleware', () => {
         expect(res.json).not.toHaveBeenCalled();
     });
 
+    /**
+     * Test case for handling validation failures.
+     * It verifies that a 400 status is returned along with the validation errors.
+     */
     it('should return 400 and validation errors if validation fails', async () => {
         (validationResult as unknown as jest.Mock).mockReturnValueOnce({
             isEmpty: jest.fn().mockReturnValue(false),
@@ -101,6 +118,10 @@ describe('validateRequest middleware', () => {
         });
     });
 
+    /**
+     * Test case for handling validation errors that lack a path.
+     * It verifies that an error is logged and only relevant validation errors are returned.
+     */
     it('should log an error and not include it if validation error has no path', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 

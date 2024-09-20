@@ -1,6 +1,12 @@
+/**
+ * @module SuccessManagerTests
+ */
 import { Response } from 'express';
 import { successHandler } from '../../Helper/successManager';
 
+/**
+ * Test suite for the successHandler function.
+ */
 describe('successHandler', () => {
     let mockResponse: Partial<Response>;
     let statusMock: jest.Mock;
@@ -15,6 +21,10 @@ describe('successHandler', () => {
         };
     });
 
+    /**
+     * Test case for handling success without a provided status code.
+     * It verifies that a 200 response is returned with a success message.
+     */
     it('should return a 200 response with a success message when no statusCode is provided', () => {
         successHandler('Success message', 0, mockResponse as Response);
 
@@ -30,7 +40,11 @@ describe('successHandler', () => {
             deviceShadow: undefined,
         });
     });
-
+    
+    /**
+     * Test case for handling success with a provided status code.
+     * It verifies that the correct status code and message are returned.
+     */
     it('should return the provided statusCode and message', () => {
         successHandler('Custom success', 201, mockResponse as Response);
 
@@ -47,6 +61,10 @@ describe('successHandler', () => {
         });
     });
 
+    /**
+     * Test case for including an optional access token in the response.
+     * It verifies that the access token is included when provided.
+     */
     it('should include optional accessToken in the response', () => {
         successHandler('Token success', 200, mockResponse as Response, 'mock_access_token');
 
@@ -63,6 +81,11 @@ describe('successHandler', () => {
         });
     });
 
+    /**
+     * Test case for including additional data in the response.
+     * It verifies that devices, deviceLogs, lastLog, device, user, and deviceShadow
+     * are included in the response when provided.
+     */
     it('should include devices, deviceLogs, lastLog, device, user, and deviceShadow if provided', () => {
         const mockDevice = { device_id: 1, cat_num: 'ABC123', user_id: 1, wifi_ssid: 'testSSID', wifi_password: 'testPass', init_vec: 'testIV', presence_connection: true, location: 'Test Location', thing_name: 'ThingName' };
         const mockDeviceLog = { log_id: 1, cat_num: 'ABC123', soil_temp: 25, soil_cap: 70, log_date: '2024-09-18', water: false };
