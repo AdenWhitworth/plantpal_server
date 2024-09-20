@@ -8,8 +8,8 @@ jest.mock('../../sockets/index', () => ({
 }));
 
 describe('Integration Tests for Express App', () => {
-    afterAll((done) => {
-        server.close(done);
+    afterAll(() => {
+        server.close();
     });
 
     it('should respond with 404 for non-existent routes', async () => {

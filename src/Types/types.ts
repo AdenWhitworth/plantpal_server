@@ -102,6 +102,21 @@ export interface DeviceShadow {
 }
 
 /**
+ * Represents a factory device with its attributes.
+ * @interface
+ */
+export interface FactoryDevice {
+    /** The unique identifier for the factory. */
+    factory_id: number;
+    /** The category number of the factory device. */
+    cat_num: string;
+    /** The date associated with the factory device. */
+    factory_date: string;
+    /** The name assigned to the factory device. */
+    thing_name: string;
+}
+
+/**
  * A function type that generates an access token for a user.
  * @type
  * @param {User} user - The user for whom to generate the access token.

@@ -181,8 +181,8 @@ describe('Dashboard Router Integration Tests', () => {
         metadata: "metaData"
     }
 
-    afterAll(done => {
-      server.close(done);
+    afterAll(() => {
+      server.close();
     });
 
     beforeAll(() => {
