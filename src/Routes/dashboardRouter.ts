@@ -347,4 +347,8 @@ dashboardRouter.get('/deviceShadow', validateAccessToken, validateRequest(device
     }
 });
 
+dashboardRouter.get('/test', (req: Request, res: Response) => {
+    res.status(200).json({ message: 'Dashboard route accessed' });
+});
+
 export { dashboardRouter };

@@ -316,4 +316,13 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
     }
 });
 
+authRouter.get('/error', (req: Request, res: Response, next: NextFunction) => {
+    const error = new Error('Internal Server Error');
+    next(error);
+});
+
+authRouter.get('/test', (req: Request, res: Response) => {
+    res.status(200).json({ message: 'Auth route accessed' });
+});
+  
 export { authRouter, validateRequest, validateAccessToken };
