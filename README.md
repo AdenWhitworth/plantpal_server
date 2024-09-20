@@ -1,3 +1,5 @@
+<img width="80" src="https://github.com/AdenWhitworth/PlantPal_Front-End/raw/master/src/Images/PlantPal%20Logo.svg" alt="PlantPal Logo">
+
 # PlantPal Server
 
 Welcome to the **PlantPal Server**, the backend API for PlantPal, an application designed to help plant enthusiasts monitor and manage their plants. This repository contains the Node.js backend that powers PlantPal's user authentication, device data tracking, and plant care management features.
