@@ -286,3 +286,14 @@ export interface ReportedState {
     /** Indicates whether automatic control is currently enabled (optional). */
     auto?: boolean;
 }
+
+/**
+ * Interface defining the structure of the error with status
+ * @interface
+ * @extends Error
+ * @property {number} [statusCode] - The ID of the status code associated with the error (optional).
+ */
+export interface ErrorWithStatus extends Error {
+    /** The ID of the status code associated with the error. */
+    statusCode?: number;
+}
