@@ -2,10 +2,17 @@ import { Server, Socket } from 'socket.io';
 import { getUserById, updateUserSocketId, getUserBySocket } from '../MySQL/database';
 import { JwtPayload } from 'jsonwebtoken';
 import { verifyToken } from '../Helper/jwtManager';
-import { CallbackResponse, handleSocketCallback, extractErrorMessage } from '../Helper/callbackManager';
+import { handleSocketCallback, extractErrorMessage } from '../Helper/callbackManager';
+import { CallbackResponse, AccessTokenSocket } from '../Types/types';
 
 let io: Server;
 
+/**
+ * Initializes the Socket.IO server with the given HTTP server.
+ *
+ * @param {any} server - The HTTP server to attach Socket.IO to.
+ * @returns {void}
+ */
 function initSocket(server: any): void {
   io = new Server(server, {
     cors: {
@@ -16,10 +23,14 @@ function initSocket(server: any): void {
   });
 }
 
-interface AccessTokenSocket extends Socket {
-  user_id?: number;
-}
-
+/**
+ * Validates the access token provided in the socket handshake.
+ *
+ * @param {AccessTokenSocket} socket - The socket connection.
+ * @param {function} next - The callback function to call after validation.
+ * @returns {Promise<void>}
+ * @throws {Error} If the access token is invalid or not provided.
+ */
 const validateAccessToken = async (socket: AccessTokenSocket, next: (err?: Error) => void): Promise<void> => {
 
   const authHeader = socket.handshake.auth.token;
@@ -51,6 +62,12 @@ const validateAccessToken = async (socket: AccessTokenSocket, next: (err?: Error
 
 };
 
+/**
+ * Establishes the connection for Socket.IO, setting up middleware and event listeners.
+ *
+ * @returns {void}
+ * @throws {Error} If Socket.IO has not been initialized.
+ */
 function connectSocket(): void {
   if (!io) {
     throw new Error('Socket.IO has not been initialized.');
@@ -70,7 +87,13 @@ function connectSocket(): void {
   });
 }
 
-function handleAddUser(socket: AccessTokenSocket) {
+/**
+ * Handles the 'addUser' event to add a user to a room and update their socket ID.
+ *
+ * @param {AccessTokenSocket} socket - The socket connection.
+ * @returns {void}
+ */
+function handleAddUser(socket: AccessTokenSocket): void {
   socket.on('addUser', async (user_id: number, callback: (response: CallbackResponse) => void) => {
     try {
       let user = await getUserById(user_id);
@@ -91,7 +114,13 @@ function handleAddUser(socket: AccessTokenSocket) {
   });
 }
 
-function handleRemoveUser(socket: AccessTokenSocket) {
+/**
+ * Handles the 'removeUser' event to remove a user from the connected users list.
+ *
+ * @param {AccessTokenSocket} socket - The socket connection.
+ * @returns {void}
+ */
+function handleRemoveUser(socket: AccessTokenSocket): void {
   socket.on('removeUser', async (user_id: number, callback: (response: CallbackResponse) => void) => {
     try {
       let user = await getUserById(user_id);
@@ -111,7 +140,13 @@ function handleRemoveUser(socket: AccessTokenSocket) {
   });
 }
 
-function handleDisconnect(socket: AccessTokenSocket) {
+/**
+ * Handles the 'disconnect' event for cleaning up user socket information.
+ *
+ * @param {AccessTokenSocket} socket - The socket connection.
+ * @returns {void}
+ */
+function handleDisconnect(socket: AccessTokenSocket): void {
   socket.on('disconnect', async () => {
     try {
       let user = await getUserBySocket(socket.id);
@@ -125,7 +160,13 @@ function handleDisconnect(socket: AccessTokenSocket) {
   });
 }
 
-function handleCheckSocket(socket: AccessTokenSocket) {
+/**
+ * Handles the 'checkSocket' event to check and update a user's socket information.
+ *
+ * @param {AccessTokenSocket} socket - The socket connection.
+ * @returns {void}
+ */
+function handleCheckSocket(socket: AccessTokenSocket): void {
   socket.on('checkSocket', async (user_id: number, callback: (response: CallbackResponse) => void) => {
     try {
       let user = await getUserById(user_id);
@@ -148,6 +189,12 @@ function handleCheckSocket(socket: AccessTokenSocket) {
   });
 }
 
+/**
+ * Retrieves the Socket.IO instance.
+ *
+ * @returns {Server} The Socket.IO server instance.
+ * @throws {Error} If Socket.IO has not been initialized.
+ */
 function getIo(): Server {
   if (!io) {
     throw new Error('Socket.IO has not been initialized.');
@@ -155,6 +202,15 @@ function getIo(): Server {
   return io;
 }
 
+/**
+ * Emits an event to a user based on their user ID.
+ *
+ * @param {number} user_id - The ID of the user to emit the event to.
+ * @param {string} eventName - The name of the event to emit.
+ * @param {any} data - The data to send with the event.
+ * @returns {Promise<void>}
+ * @throws {Error} If Socket.IO has not been initialized or the user is not connected.
+ */
 async function emitToUser(user_id: number, eventName: string, data: any): Promise<void> {
   if (!io) {
     throw new Error('Socket.IO has not been initialized.');

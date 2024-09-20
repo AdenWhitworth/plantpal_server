@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Socket } from 'socket.io';
 
 /**
  * Represents a user with their attributes.
@@ -225,11 +226,23 @@ export type ValidationMiddleware = (req: Request, res: Response, next: NextFunct
  * Interface defining the structure of the access token request.
  * @interface
  * @extends Request
+ * @property {number} [user_id] - The ID of the user associated with the socket.
  */
 export interface AccessTokenRequest extends Request {
     /** The ID of the user associated with the access token. */
     user_id?: number;
 }
+
+/**
+ * Interface defining the structure of the access token request.
+ * @interface
+ * @extends Socket
+ * @property {number} [user_id] - The ID of the user associated with the socket.
+ */
+export interface AccessTokenSocket extends Socket {
+    /** The ID of the user associated with the access token. */
+    user_id?: number;
+  }
 
 /**
  * Interface representing the overall state structure.
