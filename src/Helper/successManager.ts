@@ -34,10 +34,28 @@ interface User {
     socket_id?: string | null;
 }
 
-export const successHandler = (message: string, statusCode: number, res: Response, accessToken?: string, devices?: Device[], deviceLogs?: DeviceLog[], lastLog?: DeviceLog, device?: Device, user?: User) => {
+interface DeviceShadow {
+    state: {
+        reported: {
+            welcome: string;
+            connected: boolean;
+            auto: boolean;
+            pump: boolean;
+        };
+        desired: {
+            welcome: string;
+            connected: boolean;
+            auto: boolean;
+            pump: boolean;
+        };
+    };
+    metadata?: any;
+}
+
+export const successHandler = (message: string, statusCode: number, res: Response, accessToken?: string, devices?: Device[], deviceLogs?: DeviceLog[], lastLog?: DeviceLog, device?: Device, user?: User, deviceShadow?: DeviceShadow) => {
     statusCode = statusCode || 200;
     message = message || 'Success';
 
-    return res.status(statusCode).json({ message, accessToken, devices, deviceLogs, lastLog, device, user});
+    return res.status(statusCode).json({ message, accessToken, devices, deviceLogs, lastLog, device, user, deviceShadow});
     
 }

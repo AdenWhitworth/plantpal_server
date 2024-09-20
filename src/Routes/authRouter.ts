@@ -25,9 +25,10 @@ const validateRequest = (validations: ValidationChain[]): ValidationMiddleware =
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             const errorObject: Record<string, string> = {};
-            errors.array().forEach(error => {
-                if (error.type) {
-                    errorObject[error.type] = error.msg;
+
+            errors.array().forEach((error: any) => {
+                if (error.path) {
+                    errorObject[error.path] = error.msg;
                 } else {
                     console.error('Missing param in validation error:', error);
                 }
@@ -42,7 +43,7 @@ const validateRequest = (validations: ValidationChain[]): ValidationMiddleware =
 };
 
 const validateAccessToken = async (req: AccessTokenRequest, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers?.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         throw new CustomError('Please provide the access token', 401);
     }
@@ -70,7 +71,6 @@ const apiKeyValidation = check('x-api-key')
         }
         return true;
     })
-    .withMessage('Forbidden');
 
 const registerValidation: ValidationChain[] = [
     check('first_name', 'First name is required').not().isEmpty(),
@@ -93,7 +93,8 @@ const updateUserValidation: ValidationChain[] = [
 ];
 
 const refreshAccessTokenValidation: ValidationChain[] = [
-    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty')
+    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty'),
+    apiKeyValidation
 ];
 
 const forgotPasswordValidation: ValidationChain[] = [
@@ -210,7 +211,7 @@ authRouter.post('/refreshAccessToken', validateRequest(refreshAccessTokenValidat
         const decoded = verifyToken(refreshToken, process.env.AUTH_REFRESH_TOKEN_SECRET as string);
 
         if (typeof decoded !== 'object' || !('user_id' in decoded)) {
-            throw new CustomError('Invalid access token', 401);
+            throw new CustomError('Invalid refresh token', 401);
         } 
 
         const user_id = (decoded as JwtPayload).user_id as number;
@@ -287,6 +288,7 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
         const resetTokenExpiryTimestamp = new Date(user.reset_token_expiry).getTime();
 
         const isMatch = await bcrypt.compare(correctToken, user.reset_token);
+
         if (!isMatch || Date.now() > resetTokenExpiryTimestamp) {
             throw new CustomError('Invalid or expired token', 400);
         }
@@ -314,4 +316,13 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
     }
 });
 
-export { authRouter };
+authRouter.get('/error', (req: Request, res: Response, next: NextFunction) => {
+    const error = new Error('Internal Server Error');
+    next(error);
+});
+
+authRouter.get('/test', (req: Request, res: Response) => {
+    res.status(200).json({ message: 'Auth route accessed' });
+});
+  
+export { authRouter, validateRequest, validateAccessToken };

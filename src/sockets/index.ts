@@ -166,11 +166,11 @@ async function emitToUser(user_id: number, eventName: string, data: any): Promis
     if (!user || !user.socket_id) {
       throw new Error(`User ${user_id} is not connected`);
     }
-
+    
     io.to(user.socket_id).emit(eventName, data);
   } catch (error) {
-    console.error(`Error emitting to user ${user_id}:`, error);
+    throw new Error(`Error emitting to user ${user_id}`);
   }
 }
 
-export { initSocket, connectSocket, getIo, emitToUser };
+export { initSocket, connectSocket, getIo, emitToUser, validateAccessToken, handleAddUser, handleRemoveUser, handleCheckSocket, handleDisconnect };

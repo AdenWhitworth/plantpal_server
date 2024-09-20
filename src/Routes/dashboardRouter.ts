@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { check, validationResult, ValidationChain } from 'express-validator';
-import { JwtPayload } from 'jsonwebtoken';
+import { check, ValidationChain } from 'express-validator';
 import { encrypt } from '../Helper/myCrypto';
 import { emitToUser } from '../sockets/index';
 import {
@@ -16,8 +15,8 @@ import {
 } from '../MySQL/database';
 import AWS from 'aws-sdk';
 import { errorHandler, CustomError } from '../Helper/errorManager';
-import { verifyToken } from '../Helper/jwtManager';
 import { successHandler } from '../Helper/successManager';
+import { validateAccessToken, validateRequest } from './authRouter';
 
 const dashboardRouter = express.Router();
 
@@ -29,56 +28,9 @@ AWS.config.update({
 
 const iotData = new AWS.IotData({ endpoint: process.env.AWS_IOT_ENDPOINT as string });
 
-type ValidationMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
-
 interface AccessTokenRequest extends Request {
     user_id?: number;
 }
-
-const validateAccessToken = async (req: AccessTokenRequest, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer')) {
-        throw new CustomError('Please provide the access token', 401);
-    }
-
-    const accessToken = authHeader.split(' ')[1];
-    try {
-
-        const decoded = verifyToken(accessToken, process.env.AUTH_ACCESS_TOKEN_SECRET as string);
-        if (typeof decoded === 'object' && 'user_id' in decoded) {
-            req.user_id = (decoded as JwtPayload).user_id as number;
-            next();
-        } else {
-            throw new CustomError('Invalid access token', 401);
-        }
-        
-    } catch (error) {
-        errorHandler(error as CustomError, res);
-    }
-};
-
-const validateRequest = (validations: ValidationChain[]): ValidationMiddleware => {
-    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        await Promise.all(validations.map(validation => validation.run(req)));
-
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            const errorObject: Record<string, string> = {};
-            errors.array().forEach(error => {
-                if (error.type) {
-                    errorObject[error.type] = error.msg;
-                } else {
-                    console.error('Missing param in validation error:', error);
-                }
-            });
-
-            res.status(400).json({ errors: errorObject });
-            return;
-        }
-
-        next();
-    };
-};
 
 const apiKeyValidation = check('x-api-key')
     .custom((value, { req }) => {
@@ -86,8 +38,7 @@ const apiKeyValidation = check('x-api-key')
             throw new Error('Invalid API key');
         }
         return true;
-    })
-    .withMessage('Forbidden');
+    });
 
 const deviceLogsValidation: ValidationChain[] = [
     check('cat_num', 'Catalog number is required').not().isEmpty()
@@ -294,7 +245,7 @@ dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValida
             throw new CustomError('Error finding user device.', 500);
         }
         
-        emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, thing_name: thingName, shadow_auto: shadowAuto });
+        await emitToUser(userDevice.user_id, 'shadowUpdateAuto', { device: userDevice, thing_name: thingName, shadow_auto: shadowAuto });
         successHandler("Shadow auto update received", 201, res);
     } catch (error) {
         errorHandler(error as CustomError, res);
@@ -318,7 +269,7 @@ dashboardRouter.post('/presenceUpdateConnection', validateRequest(presenceUpdate
             throw new CustomError('Error updating device presence connection.', 400);
         }
         
-        emitToUser(userDevice.user_id, 'presenceUpdateConnection', { device: updatedDevice, thing_name: thingName, presence_connection: presenceConnection });
+        await emitToUser(userDevice.user_id, 'presenceUpdateConnection', { device: updatedDevice, thing_name: thingName, presence_connection: presenceConnection });
         successHandler("Shadow connection update received", 201, res);
     } catch (error) {
         errorHandler(error as CustomError, res);
@@ -342,7 +293,7 @@ dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidati
 
         await updateDeviceShadow(device.thing_name,desiredState);
 
-        successHandler("The device auto has been updated!", 200, res);
+        successHandler("The device pump has been updated!", 200, res);
 
     } catch (error) {
         errorHandler(error as CustomError, res);
@@ -368,10 +319,10 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
             throw new CustomError('Error finding user device.', 500);
         }
         
-        emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
+        await emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
 
         if (shadowPump) {
-            updateDeviceShadow(thingName,desiredState, reportedState);
+            await updateDeviceShadow(thingName,desiredState, reportedState);
         }
         
         successHandler("Shadow pump water update received", 201, res);
@@ -390,10 +341,14 @@ dashboardRouter.get('/deviceShadow', validateAccessToken, validateRequest(device
             throw new CustomError('Error getting device shadow', 500);
         }
 
-        return res.send({ error: false, deviceShadow: deviceShadow, message: 'Fetched Shadow Successfully.' });
+        successHandler("Fetched Shadow Successfully.", 201, res, undefined, undefined, undefined, undefined, undefined, undefined, deviceShadow);
     } catch (error) {
         errorHandler(error as CustomError, res);
     }
+});
+
+dashboardRouter.get('/test', (req: Request, res: Response) => {
+    res.status(200).json({ message: 'Dashboard route accessed' });
 });
 
 export { dashboardRouter };

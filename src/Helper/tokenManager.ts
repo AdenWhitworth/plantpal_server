@@ -19,7 +19,11 @@ interface User {
     socket_id?: string | null;
 }
 
-export const generateAccessToken = (user: User): string => {
+export type GenerateAccessTokenFunction = (user: User) => string;
+export type GenerateRefreshTokenFunction = (user: User) => Promise<string>;
+export type GenerateResetTokenFunction = (user: User) => Promise<string>;
+
+export const generateAccessToken :GenerateAccessTokenFunction = (user: User): string => {
     return signToken(
         { user_id: user.user_id },
         process.env.AUTH_ACCESS_TOKEN_SECRET as string,
@@ -27,7 +31,7 @@ export const generateAccessToken = (user: User): string => {
     );
 }
 
-export const generateRefreshToken = async (user: User): Promise<string> => {
+export const generateRefreshToken: GenerateRefreshTokenFunction = async (user: User): Promise<string> => {
     try {
         const refreshToken = signToken(
             { user_id: user.user_id },
@@ -41,12 +45,11 @@ export const generateRefreshToken = async (user: User): Promise<string> => {
 
         return refreshToken;
     } catch (error) {
-        console.error('Error generating refresh token:', error);
         throw new Error('Error generating refresh token');
     }
 }
 
-export const generateResetToken = async (user: User): Promise<string> => {
+export const generateResetToken: GenerateResetTokenFunction = async (user: User): Promise<string> => {
     try {
         const resetTokenValue = crypto.randomBytes(20).toString('base64url');
         const resetTokenSecret = crypto.randomBytes(10).toString('hex');
@@ -62,7 +65,6 @@ export const generateResetToken = async (user: User): Promise<string> => {
 
         return resetToken;
     } catch (error) {
-        console.error('Error generating reset token:', error);
         throw new Error('Error generating reset token');
     }
 }
