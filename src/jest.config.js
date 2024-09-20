@@ -1,10 +1,13 @@
 module.exports = {
-    preset: 'ts-jest', // For TypeScript support
-    testEnvironment: 'node', // To simulate Node.js environment
+    preset: 'ts-jest',
+    testEnvironment: 'node',
     setupFiles: ['dotenv/config'],
     transform: {
-      '^.+\\.tsx?$': 'ts-jest', // Transpiling TypeScript
+      '^.+\\.tsx?$': 'ts-jest', 
     },
-    moduleFileExtensions: ['ts', 'js'], // Supported file extensions
-    transformIgnorePatterns: ['<rootDir>/node_modules/'], // Ignoring transformations for node_modules
+    moduleNameMapper: {
+      '^@/(.*)$': '<rootDir>/src/$1'
+    },
+    moduleFileExtensions: ['ts', 'js'], 
+    transformIgnorePatterns: ['<rootDir>/node_modules/'], 
 };
