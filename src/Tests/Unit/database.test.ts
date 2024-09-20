@@ -227,9 +227,6 @@ describe('Database functions', () => {
         });
     });
 
-
-    //////////////////////////////////////////////////
-
     describe('updateUserInfo', () => {
         it('should update user information', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
