@@ -5,24 +5,14 @@ import {
     updateRefreshToken,
     updateResetToken,
 } from '../MySQL/database';
+import { User, GenerateAccessTokenFunction, GenerateRefreshTokenFunction, GenerateResetTokenFunction} from '../Types/types';
 
-interface User {
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    password: string;
-    last_login: string | null;
-    refresh_token?: string | null;
-    reset_token?: string | null;
-    reset_token_expiry?: string | null;
-    socket_id?: string | null;
-}
-
-export type GenerateAccessTokenFunction = (user: User) => string;
-export type GenerateRefreshTokenFunction = (user: User) => Promise<string>;
-export type GenerateResetTokenFunction = (user: User) => Promise<string>;
-
+/**
+ * Generates an access token for the given user.
+ *
+ * @param {User} user - The user for whom to generate the access token.
+ * @returns {string} The generated access token.
+ */
 export const generateAccessToken :GenerateAccessTokenFunction = (user: User): string => {
     return signToken(
         { user_id: user.user_id },
@@ -31,6 +21,13 @@ export const generateAccessToken :GenerateAccessTokenFunction = (user: User): st
     );
 }
 
+/**
+ * Generates a refresh token for the given user and saves/updates it in the database..
+ *
+ * @param {User} user - The user for whom to generate the refresh token.
+ * @returns {Promise<string>} A promise that resolves to the generated refresh token.
+ * @throws {Error} If there is an error generating the refresh token.
+ */
 export const generateRefreshToken: GenerateRefreshTokenFunction = async (user: User): Promise<string> => {
     try {
         const refreshToken = signToken(
@@ -49,6 +46,13 @@ export const generateRefreshToken: GenerateRefreshTokenFunction = async (user: U
     }
 }
 
+/**
+ * Generates a password reset token for the given user and saves/updates it in the database.
+ *
+ * @param {User} user - The user for whom to generate the reset token.
+ * @returns {Promise<string>} A promise that resolves to the generated reset token.
+ * @throws {Error} If there is an error generating the reset token.
+ */
 export const generateResetToken: GenerateResetTokenFunction = async (user: User): Promise<string> => {
     try {
         const resetTokenValue = crypto.randomBytes(20).toString('base64url');

@@ -24,57 +24,25 @@ import {
     updatePresenceConnection
 } from '../../MySQL/database';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2/promise';
+import { User, Device, DeviceLog, FactoryDevice } from '../../Types/types';
 
+/**
+ * Mocking the mysql2/promise module to create a pool for testing purposes.
+ */
 jest.mock('mysql2/promise', () => ({
     createPool: () => ({
         query: jest.fn()
     })
 }));
 
+/**
+ * Tests for the `database` functions.
+ * @function
+ */
 describe('Database functions', () => {
     const mockQuery = jest.spyOn(pool, 'query');
 
-    interface User {
-        user_id: number;
-        first_name: string;
-        last_name: string;
-        email: string;
-        password: string;
-        last_login: string | null;
-        refresh_token?: string | null;
-        reset_token?: string | null;
-        reset_token_expiry?: string | null;
-        socket_id?: string | null;
-    }
-
-    interface Device {
-        device_id: number;
-        cat_num: string;
-        user_id: number;
-        wifi_ssid: string;
-        wifi_password: string;
-        init_vec: string;
-        presence_connection: boolean;
-        location: string;
-        thing_name: string;
-    };
-    
-    interface DeviceLog {
-        log_id: number;
-        cat_num: string;
-        soil_temp: number;
-        soil_cap: number;
-        log_date: string;
-        water: boolean;
-    };
-    
-    interface FactoryDevice {
-        factory_id: number,
-        cat_num: string,
-        factory_date: string,
-        thing_name: string,
-    }
-
+    /** @type {User} Test user object */
     const testUser: User = {
         user_id: 1,
         first_name: 'Jane',
@@ -88,7 +56,7 @@ describe('Database functions', () => {
         socket_id: "mockSocketId",
     }
 
-
+    /** @type {Device} Test device object */
     const testDevice: Device = {
         device_id: 1,
         cat_num: "A1B1C1",
@@ -101,6 +69,7 @@ describe('Database functions', () => {
         thing_name: "mockThing",
     };
     
+    /** @type {DeviceLog} Test device log object */
     const testDeviceLog: DeviceLog =  {
         log_id: 1,
         cat_num: "A1B1C1",
@@ -110,6 +79,7 @@ describe('Database functions', () => {
         water: false,
     };
     
+    /** @type {FactoryDevice} Test factory device object */
     const testFactoryDevice: FactoryDevice =  {
         factory_id: 1,
         cat_num: "A1B1C1",
@@ -121,7 +91,14 @@ describe('Database functions', () => {
         jest.clearAllMocks();
     });
 
+    /**
+     * Tests for the getUsers function.
+     * @function
+     */
     describe('getUsers', () => {
+        /**
+         * Test case to return a list of users.
+         */
         it('should return a list of users', async () => {
             const mockUsers: RowDataPacket[] = [{ testUser } as RowDataPacket];
             const mockFields: FieldPacket[] = [];
@@ -134,7 +111,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getUserByEmail function.
+     * @function
+     */
     describe('getUserByEmail', () => {
+        /**
+         * Test case to return a user when a valid `email` is provided.
+         */
         it('should return a user by email', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -146,6 +130,9 @@ describe('Database functions', () => {
             expect(result).toEqual(mockUser);
         });
 
+        /**
+         * Test case to return undefined user when `email` is undefiend. 
+         */
         it('should return undefined if no user found', async () => {
             const undefinedEmail = 'notfound@example.com';
             const mockFields: FieldPacket[] = [];
@@ -157,7 +144,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getUserById function.
+     * @function
+     */
     describe('getUserById', () => {
+        /**
+         * Test case to return a user when a valid `user_id` is provided.
+         */
         it('should return a user by ID', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -170,7 +164,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the createUser function.
+     * @function
+     */
     describe('createUser', () => {
+        /**
+         * Test case to return a new user when a valid `first_name`, 
+         * `last_name`, `email`, and `password` are provided.
+         */
         it('should create a new user and return the user data', async () => {
             
             const mockUser: RowDataPacket = testUser as RowDataPacket;
@@ -205,7 +207,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateLastLoginTime function.
+     * @function
+     */
     describe('updateLastLoginTime', () => {
+        /**
+         * Test case to return an updated user when a valid `user_id` is provided.
+         */
         it('should update the last login time and return the updated user', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -227,7 +236,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateUserInfo function.
+     * @function
+     */
     describe('updateUserInfo', () => {
+        /**
+         * Test case to return an updated user when a valid `user_id`, `first_name`, 
+         * `last_name`, `email`, and `password` are provided.
+         */
         it('should update user information', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -261,7 +278,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateUserPassword function.
+     * @function
+     */
     describe('updateUserPassword', () => {
+        /**
+         * Test case to return an updated user when a valid `user_id`, 
+         * and `password` are provided.
+         */
         it('should update user password', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -295,7 +320,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateRefreshToken function.
+     * @function
+     */
     describe('updateRefreshToken', () => {
+        /**
+         * Test case to return an updated user when a valid `user_id` and 
+         * `refresh_token` are provided.
+         */
         it('should update the refresh token', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -329,7 +362,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateResetToken function.
+     * @function
+     */
     describe('updateResetToken', () => {
+        /**
+         * Test case to return an updated user when a valid `user_id`, 
+         * `reset_token_expiry` and `reset_token` are provided.
+         */
         it('should update the reset token', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -363,7 +404,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the clearResetToken function.
+     * @function
+     */
     describe('clearResetToken', () => {
+        /**
+         * Test case to return an updated user with null reset variables
+         *  when a valid `user_id` is provided.
+         */
         it('should clear the reset token', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -397,7 +446,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getUserDevices function.
+     * @function
+     */
     describe('getUserDevices', () => {
+        /**
+         * Test case to return user devices when a valid `user_id` is provided.
+         */
         it('should return user devices', async () => {
             const mockDevices: RowDataPacket[] = [{ testDevice } as RowDataPacket];
             const mockFields: FieldPacket[] = [];
@@ -413,7 +469,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getUserDevice function.
+     * @function
+     */
     describe('getUserDevice', () => {
+        /**
+         * Test case to return a user device when a valid `device_id` is provided.
+         */
         it('should return a specific user device', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -429,7 +492,16 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the addUserDevice function.
+     * @function
+     */
     describe('addUserDevice', () => {
+        /**
+         * Test case to return a new device when a valid `cat_num`, 
+         * `user_id`, `wifi_ssid`, `wifi_password`, `init_vec`, 
+         * `presence_connection`, `location`, and `thing_name` are provided.
+         */
         it('should add a new user device', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -463,7 +535,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateDeviceWifi function.
+     * @function
+     */
     describe('updateDeviceWifi', () => {
+        /**
+         * Test case to return an updated device when a valid `device_id`, 
+         * `wifi_ssid`, `wifi_password`, and `init_vec` are provided.
+         */
         it('should update the device WiFi', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -497,7 +577,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getFactoryDevice function.
+     * @function
+     */
     describe('getFactoryDevice', () => {
+        /**
+         * Test case to return a factory device when a valid `cat_num` is provided.
+         */
         it('should return a factory device', async () => {
             const mockFactoryDevice: RowDataPacket = testFactoryDevice as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -513,7 +600,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getDeviceLogs function.
+     * @function
+     */
     describe('getDeviceLogs', () => {
+        /**
+         * Test case to return a device's logs when a valid `cat_num` is provided.
+         */
         it('should return logs for a specific device', async () => {
             const mockDeviceLogs: RowDataPacket[] = [{ testDeviceLog } as RowDataPacket];
             const mockFields: FieldPacket[] = [];
@@ -529,7 +623,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getLastDeviceLog function.
+     * @function
+     */
     describe('getLastDeviceLog', () => {
+        /**
+         * Test case to return a device's most recent log when a valid `cat_num` is provided.
+         */
         it('should return the last log for a specific device', async () => {
             const mockLastLog: RowDataPacket = testDeviceLog as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -545,7 +646,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updateUserSocketId function.
+     * @function
+     */
     describe('updateUserSocketId', () => {
+        /**
+         * Test case to return an updated user socket when a valid `user_id` 
+         * and `socket_id` are provided.
+         */
         it('should update the user socket ID', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {
@@ -580,7 +689,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getUserBySocket function.
+     * @function
+     */
     describe('getUserBySocket', () => {
+        /**
+         * Test case to return a user socket when a valid `socket_id` are provided.
+         */
         it('should return a user by socket ID', async () => {
             const mockUser: RowDataPacket = testUser as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -596,7 +712,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getDevice function.
+     * @function
+     */
     describe('getDevice', () => {
+        /**
+         * Test case to return an user device when a valid `cat_num` is provided.
+         */
         it('should return a device by device ID', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -612,7 +735,14 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the getDeviceThing function.
+     * @function
+     */
     describe('getDeviceThing', () => {
+        /**
+         * Test case to return an user device when a valid `thing_name` is provided.
+         */
         it('should return a device thing by device ID', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockFields: FieldPacket[] = [];
@@ -628,7 +758,15 @@ describe('Database functions', () => {
         });
     });
 
+    /**
+     * Tests for the updatePresenceConnection function.
+     * @function
+     */
     describe('updatePresenceConnection', () => {
+        /**
+         * Test case to return an user device with updated connection state
+         * when a valid `device_id` and `presence_connection` are provided.
+         */
         it('should update the presence connection status of a device', async () => {
             const mockDevice: RowDataPacket = testDevice as RowDataPacket;
             const mockInsertResult: ResultSetHeader = {

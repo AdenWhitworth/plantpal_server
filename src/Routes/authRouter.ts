@@ -1,126 +1,70 @@
 import express, { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
-import { check, validationResult, cookie, ValidationChain } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken, generateResetToken } from '../Helper/tokenManager';
-import { updateUserInfo, getUserById, createUser, getUserByEmail, updateLastLoginTime, updateUserPassword, clearResetToken } from '../MySQL/database';
+import { 
+    updateUserInfo, 
+    getUserById, 
+    createUser, 
+    getUserByEmail, 
+    updateLastLoginTime, 
+    updateUserPassword, 
+    clearResetToken } from '../MySQL/database';
 import { sendEmail } from '../Helper/emailManager';
 import { errorHandler, CustomError } from '../Helper/errorManager';
 import { verifyToken } from '../Helper/jwtManager';
 import { successHandler } from '../Helper/successManager';
 import { JwtPayload } from 'jsonwebtoken';
+import { AccessTokenRequest } from '../Types/types';
+import { 
+    validateRequest, 
+    validateAccessToken, 
+    registerValidation, 
+    loginValidation, 
+    updateUserValidation, 
+    refreshAccessTokenValidation, 
+    forgotPasswordValidation, 
+    resetPasswordValidation 
+} from '../Helper/validateRequestManager';
 
 const authRouter = express.Router();
 
-type ValidationMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
-
-interface AccessTokenRequest extends Request {
-    user_id?: number;
-}
-
-const validateRequest = (validations: ValidationChain[]): ValidationMiddleware => {
-    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        await Promise.all(validations.map(validation => validation.run(req)));
-
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            const errorObject: Record<string, string> = {};
-
-            errors.array().forEach((error: any) => {
-                if (error.path) {
-                    errorObject[error.path] = error.msg;
-                } else {
-                    console.error('Missing param in validation error:', error);
-                }
-            });
-
-            res.status(400).json({ errors: errorObject });
-            return;
-        }
-
-        next();
-    };
-};
-
-const validateAccessToken = async (req: AccessTokenRequest, res: Response, next: NextFunction) => {
-    const authHeader = req.headers?.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer')) {
-        throw new CustomError('Please provide the access token', 401);
-    }
-
-    const accessToken = authHeader.split(' ')[1];
-    try {
-
-        const decoded = verifyToken(accessToken, process.env.AUTH_ACCESS_TOKEN_SECRET as string);
-        if (typeof decoded === 'object' && 'user_id' in decoded) {
-            req.user_id = (decoded as JwtPayload).user_id as number;
-            next();
-        } else {
-            throw new CustomError('Invalid access token', 401);
-        }
-        
-    } catch (error) {
-        errorHandler(error as CustomError, res);
-    }
-};
-
-const apiKeyValidation = check('x-api-key')
-    .custom((value, { req }) => {
-        if (value !== process.env.API_CLIENT_KEY as string) {
-            throw new Error('Invalid API key');
-        }
-        return true;
-    })
-
-const registerValidation: ValidationChain[] = [
-    check('first_name', 'First name is required').not().isEmpty(),
-    check('last_name', 'Last name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-    apiKeyValidation
-];
-
-const loginValidation: ValidationChain[] = [
-    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-    apiKeyValidation
-];
-
-const updateUserValidation: ValidationChain[] = [
-    check('first_name', 'First name is required').not().isEmpty(),
-    check('last_name', 'Last name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
-];
-
-const refreshAccessTokenValidation: ValidationChain[] = [
-    cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty'),
-    apiKeyValidation
-];
-
-const forgotPasswordValidation: ValidationChain[] = [
-    check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
-    apiKeyValidation
-];
-
-const resetPasswordValidation: ValidationChain[] = [
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-    check('resetToken', 'Reset token is required').not().isEmpty(),
-    check('user_id', 'User Id is required').not().isEmpty(),
-    apiKeyValidation
-];
-
+/**
+ * Rate limiter for the forgot password route.
+ * Limits requests to 5 per 15 minutes from a single IP address.
+ * @constant {RateLimit} forgotPasswordLimiter
+ * @default {Object} - Configuration for the rate limiter.
+ * @property {number} windowMs - Time window in milliseconds (15 minutes).
+ * @property {number} max - Maximum number of requests allowed within the window.
+ * @property {string} message - Message sent when the limit is exceeded.
+ */
 const forgotPasswordLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
     message: 'Too many requests from this IP, please try again later.'
 });
 
+/**
+ * Rate limiter for the reset password route.
+ * Limits requests to 5 per 15 minutes from a single IP address.
+ * @constant {RateLimit} resetPasswordLimiter
+ * @default {Object} - Configuration for the rate limiter.
+ * @property {number} windowMs - Time window in milliseconds (15 minutes).
+ * @property {number} max - Maximum number of requests allowed within the window.
+ * @property {string} message - Message sent when the limit is exceeded.
+ */
 const resetPasswordLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
     message: 'Too many requests from this IP, please try again later.'
 });
 
+/**
+ * POST /register
+ * User registration endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/register', validateRequest(registerValidation), async (req: Request, res: Response) => {
     const { email, password, first_name, last_name } = req.body;
     try {
@@ -142,6 +86,12 @@ authRouter.post('/register', validateRequest(registerValidation), async (req: Re
     }
 });
 
+/**
+ * POST /login
+ * User login endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/login', validateRequest(loginValidation), async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
@@ -176,6 +126,12 @@ authRouter.post('/login', validateRequest(loginValidation), async (req: Request,
     }
 });
 
+/**
+ * POST /updateUser
+ * Update user information endpoint.
+ * @param {AccessTokenRequest} req - The request object with access token validation.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/updateUser', validateAccessToken, validateRequest(updateUserValidation), async (req: AccessTokenRequest, res: Response) => {
     const { email, first_name, last_name } = req.body;
     try {
@@ -199,6 +155,12 @@ authRouter.post('/updateUser', validateAccessToken, validateRequest(updateUserVa
     }
 });
 
+/**
+ * POST /refreshAccessToken
+ * Refresh access token endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/refreshAccessToken', validateRequest(refreshAccessTokenValidation), async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
 
@@ -235,6 +197,12 @@ authRouter.post('/refreshAccessToken', validateRequest(refreshAccessTokenValidat
     }
 });
 
+/**
+ * POST /forgotPassword
+ * Forgot password endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/forgotPassword', forgotPasswordLimiter, validateRequest(forgotPasswordValidation), async (req: Request, res: Response) => {
     const { email } = req.body;
 
@@ -269,6 +237,12 @@ authRouter.post('/forgotPassword', forgotPasswordLimiter, validateRequest(forgot
 
 });
 
+/**
+ * POST /resetPassword
+ * Reset password endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPasswordValidation), async (req: Request, res: Response) => {
     const { password, resetToken, user_id } = req.body;
     const correctToken = resetToken.replace(/%20/g, '+');
@@ -316,13 +290,26 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
     }
 });
 
+/**
+ * GET /error
+ * Testing route to trigger error endpoint.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next object.
+ */
 authRouter.get('/error', (req: Request, res: Response, next: NextFunction) => {
     const error = new Error('Internal Server Error');
     next(error);
 });
 
+/**
+ * GET /test
+ * Test route to check user access.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 authRouter.get('/test', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Auth route accessed' });
 });
   
-export { authRouter, validateRequest, validateAccessToken };
+export { authRouter };

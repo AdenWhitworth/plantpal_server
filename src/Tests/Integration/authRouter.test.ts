@@ -5,15 +5,25 @@ import { getUserByEmail, createUser, updateUserInfo, clearResetToken, getUserByI
 import { sendEmail } from "../../Helper/emailManager";
 import { compare, hash } from 'bcryptjs';
 import { verifyToken } from '../../Helper/jwtManager';
+import { TestUser } from '../../Types/types';
 
+/**
+ * Mocking the socket.
+ */
 jest.mock('../../Helper/emailManager', () => ({
     sendEmail: jest.fn(),
 }));
 
+/**
+ * Mocking the jwtManager.
+ */
 jest.mock('../../Helper/jwtManager', () => ({
     verifyToken: jest.fn(),
 }));
 
+/**
+ * Mocking the database.
+ */
 jest.mock('../../MySQL/database', () => ({
     getUserByEmail: jest.fn(),
     createUser: jest.fn(),
@@ -24,6 +34,9 @@ jest.mock('../../MySQL/database', () => ({
     updateUserPassword: jest.fn()
 }));
 
+/**
+ * Mocking the tokenManager.
+ */
 jest.mock('../../Helper/tokenManager', () => ({
     generateAccessToken: jest.fn(),
     generateRefreshToken: jest.fn(),
@@ -33,11 +46,17 @@ jest.mock('../../Helper/tokenManager', () => ({
 type HashFunction = (password: string, salt: string | number) => Promise<string>;
 type CompareFunction = (password: string, hash: string) => Promise<boolean>;
 
+/**
+ * Mocking the bcryptjs.
+ */
 jest.mock('bcryptjs', () => ({
     hash: jest.fn() as jest.MockedFunction<HashFunction>,
     compare: jest.fn() as jest.MockedFunction<CompareFunction>,
 }));
 
+/**
+ * Mocking the aws-sdk.
+ */
 jest.mock('aws-sdk', () => {
     const mockAWS = {
       config: {
@@ -52,25 +71,14 @@ jest.mock('aws-sdk', () => {
     };
 });
 
+/**
+ * Integration tests for the Auth Router.
+ */
 describe('Auth Router Integration Tests', () => {
     const expiryMinutes = 15;
     const resetTokenExpiryTimestamp = Date.now() + (expiryMinutes * 60 * 1000);
     const formattedResetTokenExpiry = new Date(resetTokenExpiryTimestamp).toISOString();
     
-    interface TestUser {
-        user_id: number,
-        first_name: string,
-        last_name: string,
-        email: string,
-        password: string,
-        hashPassword: string,
-        refresh_token: string,
-        reset_token_expiry: string,
-        reset_token: string,
-        accessToken: string,
-        invalidAccessToken: string
-    };
-
     const testUser: TestUser = {
         user_id: 1,
         first_name: 'Jane',
@@ -84,6 +92,10 @@ describe('Auth Router Integration Tests', () => {
         accessToken: 'mockAccessToken',
         invalidAccessToken: 'mockInvalidAccessToken'
     }
+
+    beforeAll(() => {
+        server.close();
+    });
   
     afterAll(() => {
       server.close();
@@ -100,7 +112,11 @@ describe('Auth Router Integration Tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-  
+    
+    /**
+     * Test case for user registration.
+     * It verifies that a user can successfully register with valid details and receive the expected response.
+     */
     test('POST/register should register a new user successfully', async () => {
 
         (createUser as jest.Mock).mockResolvedValue({
@@ -132,6 +148,10 @@ describe('Auth Router Integration Tests', () => {
         );
     });
 
+    /**
+     * Test case for user registration.
+     * It verifies that a user cannot register without a valid api key.
+     */
     test('POST/register should handle missing api key', async () => {
 
         const response = await request(app)
@@ -149,6 +169,10 @@ describe('Auth Router Integration Tests', () => {
         });
     });
     
+    /**
+     * Test case for user registration.
+     * It verifies that a user cannot register with invalid details and receive the expected error response.
+     */
     test('POST/register should not register a user with an existing email', async () => {
 
         (getUserByEmail as jest.Mock).mockResolvedValue({ user_id: testUser.user_id, password: testUser.hashPassword });
@@ -166,6 +190,10 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('This user is already in use!');
     });
     
+    /**
+     * Test case for user login.
+     * It verifies that a user can successfully login with valid credentials and receive the access token in the response.
+     */
     test('POST/login should login successfully and return tokens', async () => {
         (getUserByEmail as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -194,6 +222,10 @@ describe('Auth Router Integration Tests', () => {
       expect(response.headers['set-cookie']).toBeDefined();
     });
 
+    /**
+     * Test case for user login.
+     * It verifies that a user cannot login with invalid api key.
+     */
     test('POST/login should handle missing api key', async () => {
 
         const response = await request(app)
@@ -208,7 +240,11 @@ describe('Auth Router Integration Tests', () => {
             "x-api-key": "Invalid API key",
         });
     });
-
+    
+    /**
+     * Test case for user login.
+     * It verifies that a user cannot login with invalid email and receive the error response.
+     */
     test('login should handle login of user who doesnt exist', async () => {
         (getUserByEmail as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -228,6 +264,10 @@ describe('Auth Router Integration Tests', () => {
       expect(response.body.message).toBe('Email or password is incorrect!');
     });
 
+    /**
+     * Test case for user login.
+     * It verifies that a user cannot login with invalid password and receive the error response.
+     */
     test('login should handle login of user with incorrect password', async () => {
         (getUserByEmail as jest.Mock).mockResolvedValue(null);
 
@@ -243,6 +283,10 @@ describe('Auth Router Integration Tests', () => {
       expect(response.body.message).toBe('Email or password is incorrect!');
     });
 
+    /**
+     * Test case for updating user information.
+     * It verifies that a user can update their personal information and receive the updated data in the response.
+     */
     test('POST/updateUser should update user information successfully', async () => {
         (updateUserInfo as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -275,6 +319,10 @@ describe('Auth Router Integration Tests', () => {
         );
     });
 
+    /**
+     * Test case for updating user information.
+     * It verifies that a user cannot update their personal information with invalid access token and receive the error response.
+     */
     test('POST/updateUser should handle a failed update to the users information', async () => {
         (verifyToken as jest.Mock).mockImplementation((token, secret) => {
             return { user_id: null };
@@ -293,7 +341,11 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('User update unsuccessful.');
     });
 
-    test('POST/updateUser should handle accessToken errors when updating user information', async () => {
+    /**
+     * Test case for updating user information.
+     * It verifies that a user update to the personal information matches the database and receive the error response.
+     */
+    test('POST/updateUser should handle database mismatch errors when updating user information', async () => {
         (updateUserInfo as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
             password: testUser.hashPassword, 
@@ -319,6 +371,10 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('User update unsuccessful.');
     });
 
+    /**
+     * Test case for token refresh.
+     * It verifies that the refresh token can be used to obtain a new access token after the previous one expires.
+     */
     test('POST/refreshAccessToken should refresh access token successfully', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -343,6 +399,10 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.accessToken).toBeDefined();
     });
 
+    /**
+     * Test case for token refresh.
+     * It verifies that the refresh token cannot be used to obtain a new access token without valid api key.
+     */
     test('POST/refreshAccessToken should handle missing api key', async () => {
 
         const response = await request(app)
@@ -355,6 +415,11 @@ describe('Auth Router Integration Tests', () => {
         });
     });
 
+    /**
+     * Test case for token refresh.
+     * It verifies that the refresh token cannot be used to obtain a new access token 
+     * without the refresh token in the cookies.
+     */
     test('POST/refreshAccessToken should handle missing refresh token in cookies', async () => {
         const response = await request(app)
         .post('/users/refreshAccessToken')
@@ -364,6 +429,11 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.errors).toEqual({"refreshToken": "Refresh token cannot be empty"});
     });
 
+    /**
+     * Test case for token refresh.
+     * It verifies that the refresh token cannot be used to obtain a new access token 
+     * without a valid refresh token.
+     */
     test('POST/refreshAccessToken should handle incorrect refresh token', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -385,6 +455,11 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('Refresh token not found, please login again');
     });
 
+    /**
+     * Test case for token refresh.
+     * It verifies that the refresh token cannot be used to obtain a new access token 
+     * without a valid user id.
+     */
     test('POST/refreshAccessToken should handle determine a user doesnt exist for the refresh token', async () => {
         (getUserById as jest.Mock).mockResolvedValue(null);
 
@@ -401,6 +476,10 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('Refresh token not found, please login again');
     });
 
+    /**
+     * Test case for password reset request.
+     * It verifies that a password reset request can be initiated for a registered user, and the appropriate email is sent.
+     */
     test('POST/forgotPassword should send a reset password email successfully', async () => {
         (getUserByEmail as jest.Mock).mockResolvedValue({ 
             user_id: testUser.user_id, 
@@ -428,7 +507,11 @@ describe('Auth Router Integration Tests', () => {
         expect(response.body.message).toBe('Reset password email sent successfully');
         expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining(expectedEmail));
     });
-
+    
+    /**
+     * Test case for password reset request.
+     * It verifies that a password reset request cannot be initiated for a registered user without valid api key.
+     */
     test('POST/forgotPassword should handle missing api key', async () => {
 
         const response = await request(app)
@@ -443,6 +526,10 @@ describe('Auth Router Integration Tests', () => {
         });
     });
 
+    /**
+     * Test case for password reset request.
+     * It verifies that a password reset request cannot be initiated for an unregistered user, but passes successful response.
+     */
     test('POST/forgotPassword should not alert user of error if user does not exist for password reset link', async () => {
         (getUserByEmail as jest.Mock).mockResolvedValue(null);
     
@@ -455,8 +542,12 @@ describe('Auth Router Integration Tests', () => {
         
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Reset password email sent successfully');
-    });
+    }); 
 
+    /**
+     * Test case for password reset completion.
+     * It verifies that a user can successfully reset their password and login with the new credentials.
+     */
     test('POST/resetPassword should reset password successfully', async () => {
         const newHashPassword = "newMockHashedPassword";
         (clearResetToken as jest.Mock);
@@ -493,6 +584,10 @@ describe('Auth Router Integration Tests', () => {
         expect(updateUserPassword).toHaveBeenCalledWith(testUser.user_id,newHashPassword);
     });
 
+    /**
+     * Test case for password reset completion.
+     * It verifies that a user cannot reset their password with an invalid api key.
+     */
     test('POST/resetPassword should handle missing api key', async () => {
 
         const response = await request(app)
@@ -509,6 +604,10 @@ describe('Auth Router Integration Tests', () => {
         });
     });
 
+    /**
+     * Test case for password reset completion.
+     * It verifies that a user cannot reset their password with an expired reset token.
+     */
     test('POST/resetPassword should handle invalid reset password request due to timeout', async () => {
         const expiredResetTokenDate = "2024-01-01T00:00:00Z";
         (clearResetToken as jest.Mock);
@@ -533,7 +632,11 @@ describe('Auth Router Integration Tests', () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Invalid or expired token');
     });
-
+    
+    /**
+     * Test case for password reset completion.
+     * It verifies that a user cannot reset their password with an incorrect reset token.
+     */
     test('POST/resetPassword should handle invalid reset password request due to token mismatch', async () => {
         (compare as jest.Mock).mockResolvedValue(false);
         (clearResetToken as jest.Mock);

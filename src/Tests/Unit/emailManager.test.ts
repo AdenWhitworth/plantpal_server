@@ -1,8 +1,14 @@
 import nodemailer from 'nodemailer';
 import { sendEmail } from '../../Helper/emailManager';
 
+/**
+ * Mocking the nodemailer.
+ */
 jest.mock('nodemailer');
 
+/**
+ * Test suite for the `sendEmail` function.
+ */
 describe('sendEmail', () => {
     const mockSendMail = jest.fn();
     const mockCreateTransport = nodemailer.createTransport as jest.Mock;
@@ -16,7 +22,12 @@ describe('sendEmail', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-
+    
+    /**
+     * Test case for sending an email with the correct mail options.
+     * It verifies that the `sendMail` function is called with the expected arguments
+     * and checks the result of the email sending.
+     */
     it('should send an email with the correct mail options', async () => {
         const mailOptions = {
             from: 'test@example.com',
@@ -40,7 +51,12 @@ describe('sendEmail', () => {
 
         expect(result).toEqual(mockSentMessageInfo);
     });
-
+    
+    /**
+     * Test case for sending an email with HTML content when provided.
+     * It verifies that the `sendMail` function is called with the HTML option
+     * and checks the result of the email sending.
+     */
     it('should send an email with HTML content when provided', async () => {
         const mailOptions = {
             from: 'test@example.com',
@@ -65,6 +81,10 @@ describe('sendEmail', () => {
         expect(result).toEqual(mockSentMessageInfo);
     });
 
+    /**
+     * Test case for handling errors from the `sendMail` function.
+     * It verifies that an error is thrown when `sendMail` fails.
+     */
     it('should handle errors from sendMail', async () => {
         const mailOptions = {
             from: 'test@example.com',

@@ -10,8 +10,14 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,  // Ensure TypeScript doesn't output files during tests
-    "isolatedModules": true  // Helps with module boundaries
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "typedocOptions": {
+    "entryPoints": [
+        "src/**/*.ts"
+    ],
+    "out": "docs/typedoc"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
