@@ -85,8 +85,8 @@ describe('Auth Router Integration Tests', () => {
         invalidAccessToken: 'mockInvalidAccessToken'
     }
   
-    afterAll(done => {
-      server.close(done);
+    afterAll(() => {
+      server.close();
     });
 
     beforeAll(() => {
