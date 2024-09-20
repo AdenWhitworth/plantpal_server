@@ -14,11 +14,20 @@ import { JwtPayload } from 'jsonwebtoken';
  */
 export const apiKeyValidation = check('x-api-key')
     .custom((value, { req }) => {
-        if (value !== process.env.API_CLIENT_KEY as string) {
+        if (value !== process.env.API_KEY as string) {
             throw new Error('Invalid API key');
         }
         return true;
     })
+
+export const apiKeyValidationClient = check('x-api-key')
+.custom((value, { req }) => {
+    if (value !== process.env.API_CLIENT_KEY as string) {
+        throw new Error('Invalid API key');
+    }
+    return true;
+})
+
 
 /**
  * Validates user registration data.
@@ -31,7 +40,7 @@ export const registerValidation: ValidationChain[] = [
     check('last_name', 'Last name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-    apiKeyValidation
+    apiKeyValidationClient
 ];
 
 /**
@@ -43,7 +52,7 @@ export const registerValidation: ValidationChain[] = [
 export const loginValidation: ValidationChain[] = [
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-    apiKeyValidation
+    apiKeyValidationClient
 ];
 
 /**
@@ -66,7 +75,7 @@ export const updateUserValidation: ValidationChain[] = [
  */
 export const refreshAccessTokenValidation: ValidationChain[] = [
     cookie('refreshToken').exists().withMessage('Refresh token not found, please login again').notEmpty().withMessage('Refresh token cannot be empty'),
-    apiKeyValidation
+    apiKeyValidationClient
 ];
 
 /**
@@ -77,7 +86,7 @@ export const refreshAccessTokenValidation: ValidationChain[] = [
  */
 export const forgotPasswordValidation: ValidationChain[] = [
     check('email', 'Please include a valid email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
-    apiKeyValidation
+    apiKeyValidationClient
 ];
 
 /**
@@ -90,7 +99,7 @@ export const resetPasswordValidation: ValidationChain[] = [
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
     check('resetToken', 'Reset token is required').not().isEmpty(),
     check('user_id', 'User Id is required').not().isEmpty(),
-    apiKeyValidation
+    apiKeyValidationClient
 ];
 
 /**

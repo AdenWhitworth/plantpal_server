@@ -19,6 +19,10 @@ describe('Integration Tests for Express App', () => {
         server.close();
     });
 
+    beforeAll(() => {
+        server.close();
+    });
+
     /**
      * Test case for non-existent routes.
      * It verifies that a 404 response is returned for requests to non-existent routes.

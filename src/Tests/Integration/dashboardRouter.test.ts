@@ -147,10 +147,11 @@ describe('Dashboard Router Integration Tests', () => {
     beforeAll(() => {
         process.env.EMAIL_FROM = 'server@gmail.com';
         process.env.AUTH_ACCESS_TOKEN_SECRET = 'accessTokenSecret';
-        process.env.API_CLIENT_KEY = 'apiKey';
+        process.env.API_KEY = 'apiKey';
         process.env.AUTH_REFRESH_TOKEN_SECRET = 'refreshTokenSecret';
         process.env.BASE_URL = 'http://localhost:3000';
         process.env.AWS_IOT_ENDPOINT = 'mockAwsEndpoint';
+        server.close();
     });
 
     beforeEach(() => {
@@ -559,7 +560,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdateAuto')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowAuto: true,
@@ -578,7 +579,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdateAuto')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string);
+                .set('x-api-key', process.env.API_KEY as string);
             
             expect(response.status).toBe(400);
             expect(response.body.errors).toEqual({
@@ -615,7 +616,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdateAuto')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowAuto: true,
@@ -637,7 +638,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdateAuto')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowAuto: true,
@@ -659,7 +660,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/presenceUpdateConnection')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     presenceConnection: false,
@@ -678,7 +679,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/presenceUpdateConnection')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string);
+                .set('x-api-key', process.env.API_KEY as string);
             
             expect(response.status).toBe(400);
             expect(response.body.errors).toEqual({
@@ -715,7 +716,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/presenceUpdateConnection')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     presenceConnection: false,
@@ -738,7 +739,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/presenceUpdateConnection')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     presenceConnection: false,
@@ -885,7 +886,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdatePumpWater')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowPump: true,
@@ -909,7 +910,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdatePumpWater')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string);
+                .set('x-api-key', process.env.API_KEY as string);
             
             expect(response.status).toBe(400);
             expect(response.body.errors).toEqual({
@@ -948,7 +949,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdatePumpWater')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowPump: true,
@@ -971,7 +972,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdatePumpWater')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowPump: true,
@@ -998,7 +999,7 @@ describe('Dashboard Router Integration Tests', () => {
 
             const response = await request(app)
                 .post('/dashboard/shadowUpdatePumpWater')
-                .set('x-api-key', process.env.API_CLIENT_KEY as string)
+                .set('x-api-key', process.env.API_KEY as string)
                 .send({
                     thingName: testDevice.thing_name,
                     shadowPump: true,
