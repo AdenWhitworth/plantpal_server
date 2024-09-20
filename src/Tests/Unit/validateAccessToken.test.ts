@@ -1,4 +1,4 @@
-import { validateAccessToken } from '../../Routes/authRouter';
+import { validateAccessToken } from '../../Helper/validateRequestManager';
 import { verifyToken } from '../../Helper/jwtManager'; 
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../../Helper/errorManager';

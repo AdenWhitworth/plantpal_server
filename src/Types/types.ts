@@ -1,3 +1,5 @@
+import { Request, Response, NextFunction } from 'express';
+
 /**
  * Represents a user with their attributes.
  * @interface
@@ -201,3 +203,30 @@ export type CallbackResponse = {
     message?: string;
     user_id?: number;
 };
+
+/**
+ * Represents the response structure for the middleware validation
+ * @type
+ * @property {interface} Request - Indicates if there was an error.
+ * @property {interface} Response - Optional message providing additional information.
+ * @property {interface} NextFunction - Optional identifier for the user associated with the callback.
+ */
+
+/**
+ * A function type that defines the response structure for the middleware validation.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} The middleware validation function
+ */
+export type ValidationMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
+
+/**
+ * Interface defining the structure of the access token request.
+ * @interface
+ * @extends Request
+ */
+export interface AccessTokenRequest extends Request {
+    /** The ID of the user associated with the access token. */
+    user_id?: number;
+}

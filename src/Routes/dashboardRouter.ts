@@ -16,7 +16,7 @@ import {
 import AWS from 'aws-sdk';
 import { errorHandler, CustomError } from '../Helper/errorManager';
 import { successHandler } from '../Helper/successManager';
-import { validateAccessToken, validateRequest } from './authRouter';
+import { validateAccessToken, validateRequest } from '../Helper/validateRequestManager';
 
 const dashboardRouter = express.Router();
 

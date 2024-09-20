@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, ValidationChain, check } from 'express-validator';
-import { validateRequest } from '../../Routes/authRouter';
+import { validateRequest } from '../../Helper/validateRequestManager';
 
 jest.mock('express-validator', () => {
     return {
