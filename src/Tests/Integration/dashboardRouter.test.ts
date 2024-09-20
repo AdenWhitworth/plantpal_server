@@ -5,17 +5,27 @@ import { getUserDevices, getDeviceLogs, getLastDeviceLog, addUserDevice, getFact
 import { encrypt } from '../../Helper/myCrypto';
 import AWS from 'aws-sdk';
 import { emitToUser } from '../../sockets/index';
+import { TestUser, Device, DeviceLog, DeviceShadow, FactoryDevice } from '../../Types/types';
 
+/**
+ * Mocking the socket.
+ */
 jest.mock('../../sockets/index', () => ({
     emitToUser: jest.fn(),
     initSocket: jest.fn(),
     connectSocket: jest.fn(),
 }));
 
+/**
+ * Mocking the jwtManager.
+ */
 jest.mock('../../Helper/jwtManager', () => ({
     verifyToken: jest.fn(),
 }));
 
+/**
+ * Mocking the database.
+ */
 jest.mock('../../MySQL/database', () => ({
     getUserDevices: jest.fn(),
     getDeviceLogs: jest.fn(),
@@ -28,10 +38,16 @@ jest.mock('../../MySQL/database', () => ({
     updatePresenceConnection: jest.fn(),
 }));
 
+/**
+ * Mocking the myCrypto.
+ */
 jest.mock('../../Helper/myCrypto', () => ({
     encrypt: jest.fn(),
 }));
 
+/**
+ * Mocking the aws-sdk.
+ */
 jest.mock('aws-sdk', () => {
     const updateThingShadowMock = jest.fn();
     const getThingShadowMock = jest.fn();
@@ -56,70 +72,13 @@ jest.mock('aws-sdk', () => {
     };
 });
 
+/**
+ * Integration tests for the Dashboard Router.
+ */
 describe('Dashboard Router Integration Tests', () => {
     const expiryMinutes = 15;
     const resetTokenExpiryTimestamp = Date.now() + (expiryMinutes * 60 * 1000);
     const formattedResetTokenExpiry = new Date(resetTokenExpiryTimestamp).toISOString();
-    
-    interface TestUser {
-        user_id: number,
-        first_name: string,
-        last_name: string,
-        email: string,
-        password: string,
-        hashPassword: string,
-        refresh_token: string,
-        reset_token_expiry: string,
-        reset_token: string,
-        accessToken: string,
-        invalidAccessToken: string
-    };
-
-    interface TestDevice {
-        device_id: number;
-        cat_num: string;
-        user_id: number;
-        wifi_ssid: string;
-        wifi_password: string;
-        init_vec: string;
-        presence_connection: boolean;
-        location: string;
-        thing_name: string;
-    };
-    
-    interface TestDeviceLog {
-        log_id: number;
-        cat_num: string;
-        soil_temp: number;
-        soil_cap: number;
-        log_date: string;
-        water: boolean;
-    };
-
-    interface TestFactoryDevice {
-        factory_id: number,
-        cat_num: string,
-        factory_date: string,
-        thing_name: string,
-    };
-
-    interface TestDeviceShadow {
-        state: {
-            reported: {
-                welcome: string;
-                connected: boolean;
-                auto: boolean;
-                pump: boolean;
-            };
-            desired: {
-                welcome: string;
-                connected: boolean;
-                auto: boolean;
-                pump: boolean;
-            };
-        };
-        metadata?: any;
-    }
 
     const testUser: TestUser = {
         user_id: 1,
@@ -135,7 +94,7 @@ describe('Dashboard Router Integration Tests', () => {
         invalidAccessToken: 'mockInvalidAccessToken'
     };
 
-    const testDevice: TestDevice = {
+    const testDevice: Device = {
         device_id: 1,
         cat_num: "A1B1C1",
         user_id: 1,
@@ -147,7 +106,7 @@ describe('Dashboard Router Integration Tests', () => {
         thing_name: "mockThing",
     };
 
-    const testDeviceLog: TestDeviceLog = {
+    const testDeviceLog: DeviceLog = {
         log_id: 1,
         cat_num: "A1B1C1",
         soil_temp: 30,
@@ -156,14 +115,14 @@ describe('Dashboard Router Integration Tests', () => {
         water: false,
     };
 
-    const testFactoryDevice: TestFactoryDevice = {
+    const testFactoryDevice: FactoryDevice = {
         factory_id: 1,
         cat_num: "A1B1C1",
         factory_date: "2024-09-18T12:10:38.311Z",
         thing_name: "mockThing",
     };
 
-    const testDeviceShadow: TestDeviceShadow =  {
+    const testDeviceShadow: DeviceShadow =  {
         state: {
             reported: {
                 welcome: "Welcome",
