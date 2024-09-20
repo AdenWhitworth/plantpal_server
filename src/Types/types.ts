@@ -230,3 +230,46 @@ export interface AccessTokenRequest extends Request {
     /** The ID of the user associated with the access token. */
     user_id?: number;
 }
+
+/**
+ * Interface representing the overall state structure.
+ * Contains both desired and reported states.
+ * @interface State
+ */
+export interface State {
+    /** 
+     * The desired state configuration.
+     * @type {DesiredState}
+     */
+    desired: DesiredState;
+
+    /** 
+     * The reported state configuration (optional).
+     * @type {ReportedState}
+     */
+    reported?: ReportedState;
+}
+
+/**
+ * Interface defining the desired state configuration.
+ * @interface DesiredState
+ */
+export interface DesiredState {
+    /** Indicates whether the pump is currently on (optional). */
+    pump?: boolean;
+
+    /** Indicates whether automatic control is currently enabled (optional). */
+    auto?: boolean;
+}
+
+/**
+ * Interface defining the reported state configuration.
+ * @interface
+ */
+export interface ReportedState {
+    /** Indicates whether the pump is currently on (optional). */
+    pump?: boolean;
+
+    /** Indicates whether automatic control is currently enabled (optional). */
+    auto?: boolean;
+}

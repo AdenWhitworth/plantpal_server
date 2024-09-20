@@ -1,5 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
-import { check, ValidationChain } from 'express-validator';
+import express, { Request, Response } from 'express';
 import { encrypt } from '../Helper/myCrypto';
 import { emitToUser } from '../sockets/index';
 import {
@@ -13,137 +12,32 @@ import {
     getUserDevice,
     updatePresenceConnection,
 } from '../MySQL/database';
-import AWS from 'aws-sdk';
 import { errorHandler, CustomError } from '../Helper/errorManager';
 import { successHandler } from '../Helper/successManager';
 import { validateAccessToken, validateRequest } from '../Helper/validateRequestManager';
+import { 
+    deviceLogsValidation, 
+    addDeviceValidation, 
+    updateWifiValidation, 
+    updateAutoValidation, 
+    presenceUpdateConnectionValidation, 
+    shadowUpdateAutoValidation, 
+    updatePumpWaterValidation, 
+    shadowUpdatePumpWaterValidation, 
+    deviceShadowValidation 
+} from '../Helper/validateRequestManager';
+import { AccessTokenRequest} from '../Types/types';
+import { getDeviceShadow, updateDeviceShadow } from '../Helper/shadowManager';
 
 const dashboardRouter = express.Router();
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  region: process.env.AWS_REGION as string
-});
-
-const iotData = new AWS.IotData({ endpoint: process.env.AWS_IOT_ENDPOINT as string });
-
-interface AccessTokenRequest extends Request {
-    user_id?: number;
-}
-
-const apiKeyValidation = check('x-api-key')
-    .custom((value, { req }) => {
-        if (value !== process.env.API_CLIENT_KEY) {
-            throw new Error('Invalid API key');
-        }
-        return true;
-    });
-
-const deviceLogsValidation: ValidationChain[] = [
-    check('cat_num', 'Catalog number is required').not().isEmpty()
-];
-
-const addDeviceValidation: ValidationChain[] = [
-    check('cat_num', 'Catalog number is required').not().isEmpty(),
-    check('location', 'Location is required').not().isEmpty(),
-    check('wifi_ssid', 'Wifi_ssid is required').not().isEmpty(),
-    check('wifi_password', 'Wifi_password is required').not().isEmpty(),
-];
-
-const updateWifiValidation: ValidationChain[] = [
-    check('device_id', 'Device_id number is required').not().isEmpty(),
-    check('wifi_ssid', 'Wifi_ssid is required').not().isEmpty(),
-    check('wifi_password', 'Wifi_password is required').not().isEmpty(),
-];
-
-const updateAutoValidation: ValidationChain[] = [
-    check('device_id', 'Device_id number is required').not().isEmpty(),
-    check('automate', 'Automate is required').not().isEmpty(),
-];
-
-const presenceUpdateConnectionValidation: ValidationChain[] = [
-    check('thingName', 'ThingName is required').not().isEmpty(),
-    check('presenceConnection', 'presenceConnection is required').not().isEmpty(),
-    apiKeyValidation
-];
-
-const shadowUpdateAutoValidation: ValidationChain[] = [
-    check('thingName', 'ThingName is required').not().isEmpty(),
-    check('shadowAuto', 'shadowAuto is required').not().isEmpty(),
-    apiKeyValidation
-];
-
-const updatePumpWaterValidation: ValidationChain[] = [
-    check('device_id', 'Device_id number is required').not().isEmpty(),
-    check('pump_water', 'Pump_water is required').not().isEmpty(),
-];
-
-const shadowUpdatePumpWaterValidation: ValidationChain[] = [
-    check('thingName', 'ThingName is required').not().isEmpty(),
-    check('shadowPump', 'shadowPump is required').not().isEmpty(),
-    apiKeyValidation
-];
-
-const deviceShadowValidation: ValidationChain[] = [
-    check('thingName', 'Thing name is required').not().isEmpty(),
-];
-
-interface State {
-    desired: DesiredState;
-    reported?: ReportedState
-}
-
-interface DesiredState {
-    pump?: boolean;
-    auto?: boolean;
-}
-
-interface ReportedState {
-    pump?: boolean;
-    auto?: boolean;
-}
-
-const updateDeviceShadow = async (thingName: string, desiredState: DesiredState, reportedState?: ReportedState): Promise<any> => {
-    const state: State = {
-        desired: desiredState
-    };
-
-    if (reportedState !== undefined) {
-        state.reported = reportedState;
-    }
-
-    
-    const params = {
-        thingName: thingName,
-        payload: JSON.stringify({
-            state: state
-        })
-    };
-
-    try {
-        const response = await iotData.updateThingShadow(params).promise();
-        const data = JSON.parse(response.payload as string); 
-        return data;
-      } catch (error) {
-        throw new Error('Failed to update device shadow.');
-      }
-};
-
-const getDeviceShadow = async (thingName: string): Promise<any> => {
-    const params = {
-        thingName: thingName
-    };
-
-    try {
-        const response = await iotData.getThingShadow(params).promise();
-        const data = JSON.parse(response.payload as string); 
-        return data;
-    } catch(error){
-        throw new Error('Failed to get device shadow.');
-    }
-}
-
+/**
+ * Route to fetch user devices.
+ * @route GET /userDevices
+ * @param {AccessTokenRequest} req - The request object containing the user ID.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If the user ID is not present or fetching devices fails.
+ */
 dashboardRouter.get('/userDevices', validateAccessToken, async (req: AccessTokenRequest, res: Response) => {
     try {
         if (!req.user_id){
@@ -157,6 +51,13 @@ dashboardRouter.get('/userDevices', validateAccessToken, async (req: AccessToken
     }
 });
 
+/**
+ * Route to fetch device logs.
+ * @route GET /deviceLogs
+ * @param {Request} req - The request object containing query parameters.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If fetching logs fails.
+ */
 dashboardRouter.get('/deviceLogs', validateAccessToken, validateRequest(deviceLogsValidation), async (req: Request, res: Response) => {
     const cat_num = req.query.cat_num as string;
 
@@ -169,6 +70,13 @@ dashboardRouter.get('/deviceLogs', validateAccessToken, validateRequest(deviceLo
     }
 });
 
+/**
+ * Route to add a new device.
+ * @route POST /addDevice
+ * @param {AccessTokenRequest} req - The request object containing device data.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If adding the device fails.
+ */
 dashboardRouter.post('/addDevice', validateAccessToken, validateRequest(addDeviceValidation), async (req: AccessTokenRequest, res: Response) => {
     const { location, cat_num, wifi_ssid, wifi_password } = req.body;
 
@@ -194,6 +102,13 @@ dashboardRouter.post('/addDevice', validateAccessToken, validateRequest(addDevic
     }
 });
 
+/**
+ * Route to update device Wi-Fi settings.
+ * @route POST /updateWifi
+ * @param {Request} req - The request object containing device and Wi-Fi data.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If updating the Wi-Fi settings fails.
+ */
 dashboardRouter.post('/updateWifi', validateAccessToken, validateRequest(updateWifiValidation), async (req: Request, res: Response) => {
     const { device_id, wifi_ssid, wifi_password } = req.body;
 
@@ -210,6 +125,13 @@ dashboardRouter.post('/updateWifi', validateAccessToken, validateRequest(updateW
     }
 });
 
+/**
+ * Route to update the device's automatic control settings.
+ * @route POST /updateAuto
+ * @param {Request} req - The request object containing device ID and automation setting.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If updating the settings fails.
+ */
 dashboardRouter.post('/updateAuto', validateAccessToken, validateRequest(updateAutoValidation), async (req: Request, res: Response) => {
     const { device_id, automate } = req.body;
 
@@ -234,6 +156,13 @@ dashboardRouter.post('/updateAuto', validateAccessToken, validateRequest(updateA
     }
 });
 
+/**
+ * Route to handle shadow update for automatic control.
+ * @route POST /shadowUpdateAuto
+ * @param {Request} req - The request object containing thing name and shadow setting.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If the shadow update fails.
+ */
 dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValidation), async (req: Request, res: Response) => {
     const { thingName, shadowAuto } = req.body;
 
@@ -252,6 +181,13 @@ dashboardRouter.post('/shadowUpdateAuto', validateRequest(shadowUpdateAutoValida
     }
 });
 
+/**
+ * Route to update presence connection status.
+ * @route POST /presenceUpdateConnection
+ * @param {Request} req - The request object containing thing name and presence status.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If updating presence connection fails.
+ */
 dashboardRouter.post('/presenceUpdateConnection', validateRequest(presenceUpdateConnectionValidation), async (req: Request, res: Response) => {
     const { thingName, presenceConnection } = req.body;
 
@@ -276,6 +212,13 @@ dashboardRouter.post('/presenceUpdateConnection', validateRequest(presenceUpdate
     }
 });
 
+/**
+ * Route to update the pump water setting.
+ * @route POST /updatePumpWater
+ * @param {Request} req - The request object containing device ID and pump setting.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If updating the pump fails.
+ */
 dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidation), async (req: Request, res: Response) => {
     
     const { device_id, pump_water } = req.body;
@@ -300,6 +243,13 @@ dashboardRouter.post('/updatePumpWater', validateRequest(updatePumpWaterValidati
     }
 });
 
+/**
+ * Route to handle shadow update for pump water.
+ * @route POST /shadowUpdatePumpWater
+ * @param {Request} req - The request object containing thing name and shadow pump status.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If the shadow update fails.
+ */
 dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpWaterValidation), async (req: Request, res: Response) => {
     const { thingName, shadowPump} = req.body;
 
@@ -331,6 +281,13 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
     }
 });
 
+/**
+ * Route to fetch the device shadow.
+ * @route GET /deviceShadow
+ * @param {Request} req - The request object containing the thing name.
+ * @param {Response} res - The response object.
+ * @throws {CustomError} If fetching the shadow fails.
+ */
 dashboardRouter.get('/deviceShadow', validateAccessToken, validateRequest(deviceShadowValidation), async (req: Request, res: Response) => {
     const thingName = req.query.thingName as string;
 
@@ -347,6 +304,12 @@ dashboardRouter.get('/deviceShadow', validateAccessToken, validateRequest(device
     }
 });
 
+/**
+ * Test route to check dashboard access.
+ * @route GET /test
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
 dashboardRouter.get('/test', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Dashboard route accessed' });
 });

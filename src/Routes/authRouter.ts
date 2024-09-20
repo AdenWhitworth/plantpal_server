@@ -292,7 +292,7 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
 
 /**
  * GET /error
- * Testing error endpoint.
+ * Testing route to trigger error endpoint.
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  * @param {NextFunction} next - The next object.
@@ -304,7 +304,7 @@ authRouter.get('/error', (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * GET /test
- * Testing user endpoint.
+ * Test route to check user access.
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  */
