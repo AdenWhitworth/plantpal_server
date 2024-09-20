@@ -1,6 +1,3 @@
-/**
- * @module CallbackManagerTests
- */
 import { handleSocketCallback, extractErrorMessage } from '../../Helper/callbackManager'
 import { CallbackResponse } from '../../Types/types';
 

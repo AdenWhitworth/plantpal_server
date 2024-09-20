@@ -5,17 +5,27 @@ import { getUserById, updateUserSocketId, getUserBySocket } from '../../MySQL/da
 import { verifyToken } from '../../Helper/jwtManager';
 import { handleSocketCallback } from '../../Helper/callbackManager';
 import { initSocket, getIo, emitToUser, validateAccessToken, handleAddUser, handleRemoveUser, handleCheckSocket, connectSocket, handleDisconnect } from '../../sockets/index';
+import { TestSocket, AccessTokenSocket } from '../../Types/types';
 
+/**
+ * Mocking the database.
+ */
 jest.mock('../../MySQL/database', () => ({
     getUserById: jest.fn(),
     updateUserSocketId: jest.fn(),
     getUserBySocket: jest.fn(),
 }));
 
+/**
+ * Mocking the jwtManager.
+ */
 jest.mock('../../Helper/jwtManager', () => ({
     verifyToken: jest.fn(),
 }));
 
+/**
+ * Mocking the callbackManager.
+ */
 jest.mock('../../Helper/callbackManager', () => ({
     handleSocketCallback: jest.fn(),
     CallbackResponse: jest.fn(),
@@ -27,7 +37,7 @@ const mockIo = new Server(httpServer);
 
 let clientSocket: any;
 
-const testSocket = {
+const testSocket: TestSocket = {
     user_id: 1,
     socket_id: 'socketId',
     validToken: 'validtoken',
@@ -52,17 +62,25 @@ afterAll(done => {
     httpServer.close(done);
 });
 
-interface AccessTokenSocket extends Socket {
-    user_id?: number;
-}
-
+/**
+ * Integration tests for the Express application.
+ * Tests socket initialization and various socket endpoints behavior.
+ */
 describe('Socket.io Integration', () => {
+    /**
+     * Test case to initialize the socket server.
+     * It verifies that the server is an instance of the socket.io `Server` and that the `sockets` object is defined.
+     */
     test('should initialize socket server', () => {
         const ioInstance = getIo();
         expect(ioInstance).toBeInstanceOf(Server);
         expect(ioInstance.sockets).toBeDefined();
     });
 
+    /**
+     * Test case to validate access token successfully.
+     * It verifies that the token is validated and the user_id is set, and the next middleware function is called without errors.
+     */
     test('should validate access token successfully', async () => {
         (verifyToken as jest.Mock).mockReturnValue({ user_id: testSocket.user_id });
         
@@ -82,6 +100,10 @@ describe('Socket.io Integration', () => {
         socket.disconnect();
     });
 
+    /**
+     * Test case for invalid access token validation.
+     * It verifies that an invalid token causes the middleware to return an error and user_id is not set.
+     */
     test('should fail to validate access token due to invalid token', async () => {
         const socket = {
             handshake: {
@@ -100,6 +122,10 @@ describe('Socket.io Integration', () => {
         socket.disconnect();
     });
 
+    /**
+     * Test case to handle the 'addUser' event.
+     * It checks if the socket joins the room and the `handleSocketCallback` function is called to notify that the user has been added.
+     */
     test('should handle addUser event', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
         (updateUserSocketId as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
@@ -131,6 +157,10 @@ describe('Socket.io Integration', () => {
         expect(handleSocketCallback).toHaveBeenCalledWith(callback, false, `User ${testSocket.user_id} added`, testSocket.user_id);
     });
 
+    /**
+     * Test case to handle the 'removeUser' event.
+     * It checks if the user is removed from connected users and the `handleSocketCallback` function is called to notify the removal.
+     */
     test('should handle removeUser event', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
         (updateUserSocketId as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
@@ -160,6 +190,10 @@ describe('Socket.io Integration', () => {
         expect(handleSocketCallback).toHaveBeenCalledWith(callback, false, `User ${testSocket.user_id} removed from connected users`, testSocket.user_id);
     });
 
+    /**
+     * Test case to handle the 'checkSocket' event where the socket needs to be updated.
+     * It verifies that the socket is updated and the `handleSocketCallback` function is called to indicate success.
+     */
     test('should handle checkSocket event which updates', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: null });
         (updateUserSocketId as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
@@ -189,6 +223,10 @@ describe('Socket.io Integration', () => {
         expect(handleSocketCallback).toHaveBeenCalledWith(callback, false, "Socket was updated");
     });
 
+    /**
+     * Test case to handle the 'checkSocket' event where the user is not found.
+     * It verifies that the `handleSocketCallback` function is called to indicate that the user does not exist.
+     */
     test('should handle checkSocket event which doesnt find a user', async () => {
         (getUserById as jest.Mock).mockResolvedValue(null);
         (handleSocketCallback as jest.Mock)
@@ -218,6 +256,10 @@ describe('Socket.io Integration', () => {
         expect(handleSocketCallback).toHaveBeenCalledWith(callback, true, "User does not exist");
     });
 
+    /**
+     * Test case to handle the 'checkSocket' event where the socket is already up to date.
+     * It verifies that the `handleSocketCallback` function is called to indicate that the socket is already up to date.
+     */
     test('should handle checkSocket event which is already up to date', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
         (updateUserSocketId as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
@@ -248,6 +290,10 @@ describe('Socket.io Integration', () => {
         expect(handleSocketCallback).toHaveBeenCalledWith(callback, false, "Socket is up to date");
     });
 
+    /**
+     * Test case to handle emitting events to a user.
+     * It verifies that the event is emitted to the correct user and the expected data is received by the client.
+     */
     test('should handle emitToUser function', async () => {
         (getUserById as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
         const eventName = 'testEvent';
@@ -260,6 +306,10 @@ describe('Socket.io Integration', () => {
         await emitToUser(testSocket.user_id, eventName, data);
     });
 
+    /**
+     * Test case for handling errors in the `emitToUser` function.
+     * It verifies that an error is thrown when attempting to emit to a non-existing user.
+     */
     test('should handle emitToUser function error', async () => {
         (getUserById as jest.Mock).mockResolvedValue(null);
         const eventName = 'testEvent';
@@ -274,6 +324,10 @@ describe('Socket.io Integration', () => {
         }
     });
 
+    /**
+     * Test case to handle the 'disconnect' event.
+     * It verifies that the user is removed from the connected users and the `updateUserSocketId` function is called to nullify the user's socket ID in the database.
+     */
     test('should handle disconnect event', async () => {
         (getUserBySocket as jest.Mock).mockResolvedValue({ user_id: testSocket.user_id, socket_id: testSocket.socket_id });
         (updateUserSocketId as jest.Mock)
@@ -303,6 +357,10 @@ describe('Socket.io Integration', () => {
         expect(updateUserSocketId).toHaveBeenCalledWith(testSocket.user_id, null);
     });
 
+    /**
+     * Test case to handle the 'disconnect' event when there is an error updating the database.
+     * It verifies that the `updateUserSocketId` function is not called if the user is not found.
+     */
     test('should handle disconnect event update socket database error', async () => {
         (getUserBySocket as jest.Mock).mockResolvedValue(null);
 

@@ -1,6 +1,3 @@
-/**
- * @module DatabaseTests
- */
 import {
     pool,
     getUsers,

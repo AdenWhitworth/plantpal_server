@@ -1,6 +1,3 @@
-/**
- * @module SuccessManagerTests
- */
 import { Response } from 'express';
 import { successHandler } from '../../Helper/successManager';
 

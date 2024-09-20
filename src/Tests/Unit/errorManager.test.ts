@@ -1,6 +1,3 @@
-/**
- * @module ErrorManagerTests
- */
 import { Response } from 'express';
 import { CustomError, errorHandler } from '../../Helper/errorManager';
 

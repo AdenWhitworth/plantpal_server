@@ -1,6 +1,3 @@
-/**
- * @module JwtManagerTests
- */
 import jwt from 'jsonwebtoken';
 import { signToken, verifyToken } from '../../Helper/jwtManager';
 

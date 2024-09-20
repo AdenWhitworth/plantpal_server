@@ -1,6 +1,3 @@
-/**
- * @module ValidateAccessTokenTests
- */
 import { validateAccessToken } from '../../Helper/validateRequestManager';
 import { verifyToken } from '../../Helper/jwtManager'; 
 import { Request, Response, NextFunction } from 'express';

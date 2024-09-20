@@ -1,6 +1,3 @@
-/**
- * @module MyCryptoTests
- */
 import crypto from 'crypto';
 import { encrypt, decrypt } from '../../Helper/myCrypto';
 

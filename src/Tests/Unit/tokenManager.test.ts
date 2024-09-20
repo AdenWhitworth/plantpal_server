@@ -1,6 +1,3 @@
-/**
- * @module TokenManagerTests
- */
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { signToken } from '../../Helper/jwtManager';

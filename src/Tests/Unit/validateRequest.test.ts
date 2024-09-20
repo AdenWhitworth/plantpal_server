@@ -1,6 +1,3 @@
-/**
- * @module ValidateRequestTests
- */
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, ValidationChain, check } from 'express-validator';
 import { validateRequest } from '../../Helper/validateRequestManager';

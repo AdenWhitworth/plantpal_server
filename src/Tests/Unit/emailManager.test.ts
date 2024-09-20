@@ -1,6 +1,3 @@
-/**
- * @module EmailManagerTests
- */
 import nodemailer from 'nodemailer';
 import { sendEmail } from '../../Helper/emailManager';
 

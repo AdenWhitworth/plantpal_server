@@ -29,6 +29,50 @@ export interface User {
 }
 
 /**
+ * Represents a test user with their attributes.
+ * @interface
+ */
+export interface TestUser {
+    /** The user's unique identifier. */
+    user_id: number,
+    /** The user's first name. */
+    first_name: string,
+    /** The user's email address. */
+    last_name: string,
+    /** The user's email address. */
+    email: string,
+    /** The user's password (unhashed). */
+    password: string,
+    /** The user's password (hashed). */
+    hashPassword: string,
+    /** Refresh token for the user session. */
+    refresh_token: string,
+    /** Expiry timestamp for the reset token. */
+    reset_token_expiry: string,
+    /** Refresh token for the user session. */
+    reset_token: string,
+    /** Access token for the user session. */
+    accessToken: string,
+    /** Invalid access token for the user session. */
+    invalidAccessToken: string
+};
+
+/**
+ * Represents a test socket with their attributes.
+ * @interface
+ */
+export interface TestSocket {
+    /** The user's unique identifier. */
+    user_id: number,
+    /** The socket identifier for real-time communication. */
+    socket_id: string,
+    /** Valid access token for the user session. */
+    validToken: string,
+    /** Invalid access token for the user session. */
+    invalidToken: string,
+}
+
+/**
  * Represents a device with its attributes.
  * @interface
  */

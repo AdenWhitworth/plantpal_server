@@ -199,6 +199,10 @@ describe('Dashboard Router Integration Tests', () => {
     });
 
     describe('Dashboard Router Integration Tests', () => {
+        /**
+         * Test the /dashboard/userDevices endpoint for a valid access token.
+         * Verifies that the API returns user devices when a valid access token is provided.
+         */
         test('GET/userDevices should return user devices when access token is valid', async () => {
             
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
@@ -215,6 +219,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.devices).toEqual([testDevice]);
         });
 
+        /**
+         * Test the /dashboard/userDevices endpoint when the access token is missing user information.
+         * Verifies that the API returns a 401 status with an "Invalid access token" message.
+         */
         test('GET/userDevices should handle if accessToken is missing user information', async () => {
             
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
@@ -229,6 +237,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe("Invalid access token");
         });
 
+        /**
+         * Test the /dashboard/userDevices and /dashboard endpoints for missing access tokens.
+         * Verifies that the API returns a 500 status with a token verification error.
+         */
         test('Dashboard GET & POST should handle if access token is missing', async () => {
             (verifyToken as jest.Mock).mockImplementation(() => {
                 throw new Error('Token verification failed');
@@ -242,6 +254,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Token verification failed');
         });
 
+        /**
+         * Test the /dashboard/deviceLogs endpoint for a valid access token.
+         * Verifies that the API returns device logs and the last log when a valid access token and cat_num are provided.
+         */
         test('GET/deviceLogs should return device logs and last log', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -262,7 +278,11 @@ describe('Dashboard Router Integration Tests', () => {
                 lastLog: testDeviceLog,
             });
         });
-
+        
+        /**
+         * Test the /dashboard/deviceLogs endpoint when cat_num is missing.
+         * Verifies that the API returns a 400 status with an error message for the missing cat_num.
+         */
         test('GET/deviceLogs should handle missing cat_num', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -276,6 +296,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.errors).toEqual({"cat_num": "Catalog number is required"});
         });
 
+        /**
+         * Test the /dashboard/addDevice endpoint for adding a new device with valid data.
+         * Verifies that the API adds the device and returns a success message with the newly registered device.
+         */
         test('POST/addDevice should add a new device when valid data is provided', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -303,6 +327,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test the /dashboard/addDevice endpoint for missing required fields (location, cat_num, wifi_ssid, wifi_password).
+         * Verifies that the API returns a 400 status with error messages for the missing fields.
+         */
         test('POST/addDevice should handle missing location, cat_num, wifi_ssid, and wifi_password', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -321,6 +349,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test that POST /addDevice handles an unapproved cat_num.
+         * When the device's cat_num is not approved, returns a 401 status code with an error message.
+         */
         test('POST/addDevice should handle unapproved cat_num', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -343,6 +375,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('PlantPal Asset Number does not exist.');
         });
 
+        /**
+         * Test that POST /addDevice handles database errors when adding a device.
+         *  When there is an error adding a device to the database, returns a 401 status code with an error message.
+         */
         test('POST/addDevice should handle adding device to database errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -366,6 +402,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Error creating new device.');
         });
 
+        /**
+         * Test that POST /updateWifi successfully updates WiFi credentials when valid data is provided.
+         * When valid WiFi credentials are provided, returns a 201 status code with a success message.
+         */
         test('POST/updateWifi should update wifi credentials when valid data is provided', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -390,6 +430,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('The device network has been updated!');
         });
 
+        /**
+         * Test that POST /updateWifi handles missing required fields such as device_id, wifi_ssid, and wifi_password.
+         * When required fields are missing, returns a 400 status code with specific field error messages.
+         */
         test('POST/updateWifi should handle missing device_id, wifi_ssid, and wifi_password', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -407,6 +451,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test that POST /updateWifi handles database errors when updating WiFi credentials.
+         * When there is an error updating WiFi credentials in the database, returns a 400 status code with an error message.
+         */
         test('POST/updateWifi should handle updating device wifi to database errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -431,6 +479,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Error updating device network.');
         });
 
+        /**
+         * Test that POST /updateAuto successfully updates the auto state when valid data is provided. 
+         * When valid data is provided, returns a 201 status code with a success message and ensures that AWS IoT is called with the correct parameters.
+         */
         test('POST/updateAuto should update auto state when valid data is provided', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -465,6 +517,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test that POST /updateAuto handles missing required fields such as device_id and automate.
+         * When required fields are missing, returns a 400 status code with specific field error messages.
+         */
         test('POST/updateAuto should handle missing device_id, and automate', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -481,6 +537,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test that POST /updateAuto handles database errors when retrieving a device.
+         * When there is an error retrieving the device from the database, returns a 400 status code with an error message.
+         */
         test('POST/updateAuto should handle getting device from database errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -500,6 +560,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Error getting device info.');
         });
 
+        /**
+         * Test that POST /updateAuto handles shadow update errors.
+         * When there is an error updating the device shadow, returns a 500 status code with an error message.
+         */
         test('POST/updateAuto should handle shadow update errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -526,6 +590,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Failed to update device shadow.');
         });
 
+        /**
+         * Test that POST /shadowUpdateAuto emits an auto state change to the user from AWS Lambda.
+         * When the shadow auto update is received, returns a 201 status code and verifies the emitToUser function is called with the correct parameters.
+         */
         test('POST/shadowUpdateAuto should emit auto state change to user from aws lambda', async () => {
 
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
@@ -543,6 +611,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(emitToUser).toHaveBeenCalledWith(testUser.user_id, "shadowUpdateAuto", { device: testDevice, thing_name: testDevice.thing_name, shadow_auto: true });
         });
         
+        /**
+         * Test that POST /shadowUpdateAuto handles missing required fields such as thingName and shadowAuto.
+         * When required fields are missing, returns a 400 status code with specific field error messages.
+         */
         test('POST/shadowUpdateAuto should handle missing thingName and shadowAuto', async () => {
 
             const response = await request(app)
@@ -556,6 +628,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test that POST /shadowUpdateAuto handles missing API key.
+         * When the API key is missing, returns a 400 status code with an error message indicating the API key is invalid.
+         */
         test('POST/shadowUpdateAuto should handle missing api key', async () => {
 
             const response = await request(app)
@@ -571,6 +647,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test that POST /shadowUpdateAuto handles errors when retrieving a device from the database.
+         * When there is an error finding the user device, returns a 500 status code with an error message.
+         */
         test('POST/shadowUpdateAuto should handle getting device from database errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(null);
 
@@ -587,6 +667,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(emitToUser).not.toHaveBeenCalled();
         });
 
+        /**
+         * Test that POST /shadowUpdateAuto handles errors when emitting to the user.
+         * When there is an error emitting to the user, returns a 500 status code with an error message.
+         */
         test('POST/shadowUpdateAuto should handle emit to user errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
 
@@ -604,6 +688,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Emit to user failed');
         });
 
+        /**
+         * Test that POST /presenceUpdateConnection emits a connection state change to the user from AWS IoT.
+         * When the presence connection update is received, returns a 201 status code and verifies the emitToUser function is called with the correct parameters.
+         */
         test('POST/presenceUpdateConnection should emit connection state change to user from aws iot', async () => {
 
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
@@ -623,6 +711,10 @@ describe('Dashboard Router Integration Tests', () => {
             expect(emitToUser).toHaveBeenCalledWith(testUser.user_id, "presenceUpdateConnection", { device: testDevice, thing_name: testDevice.thing_name, presence_connection: testDevice.presence_connection });
         });
         
+        /**
+         * Test that POST /presenceUpdateConnection handles missing required fields such as thingName and presenceConnection.
+         * When required fields are missing, returns a 400 status code with specific field error messages.
+         */
         test('POST/presenceUpdateConnection should handle missing thingName and presenceConnection', async () => {
 
             const response = await request(app)
@@ -636,6 +728,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test that POST /presenceUpdateConnection handles missing API key.
+         * When the API key is missing, returns a 400 status code with an error message indicating the API key is invalid.
+         */
         test('POST/presenceUpdateConnection should handle missing api key', async () => {
 
             const response = await request(app)
@@ -651,6 +747,10 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test that POST /presenceUpdateConnection handles errors when retrieving a device from the database.
+         * When there is an error finding the user device, returns a 500 status code with an error message.
+         */
         test('POST/presenceUpdateConnection should handle getting device from database errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(null);
 
@@ -667,6 +767,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(emitToUser).not.toHaveBeenCalled();
         });
 
+        /**
+         * Test POST /dashboard/presenceUpdateConnection should handle emit to user errors.
+         * This test verifies that when an error occurs while emitting an event to the user,
+         * the response status is 500 and the error message is returned in the response body.
+         */
         test('POST/presenceUpdateConnection should handle emit to user errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
 
@@ -684,6 +789,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Emit to user failed');
         });
 
+        /**
+         * Test POST /dashboard/updatePumpWater should update pump state when valid data is provided.
+         * This test checks that a valid request updates the device pump state successfully,
+         * and ensures the correct response and calls to the AWS IoT Data service.
+         */
         test('POST/updatePumpWater should update pump state when valid data is provided', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -718,6 +828,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test POST /dashboard/updatePumpWater should handle missing device_id and pump_water.
+         * This test validates that when required fields are missing from the request,
+         * a 400 status is returned with appropriate error messages.
+         */
         test('POST/updatePumpWater should handle missing device_id, and pump_water', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -734,6 +849,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test POST /dashboard/updatePumpWater should handle getting device from database errors.
+         * This test ensures that if the device cannot be found in the database,
+         * a 400 status is returned with a relevant error message.
+         */
         test('POST/updatePumpWater should handle getting device from database errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -753,6 +873,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Error getting device info.');
         });
 
+        /**
+         * Test POST /dashboard/updatePumpWater should handle shadow update errors.
+         * This test verifies that if updating the device shadow fails,
+         * a 500 status is returned with an appropriate error message.
+         */
         test('POST/updatePumpWater should handle shadow update errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -779,6 +904,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Failed to update device shadow.');
         });
 
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should emit pump_water state change to user from AWS Lambda.
+         * This test checks that a successful pump water state update triggers an event to the user,
+         * and verifies that the correct payloads are sent to the IoT service and emit function.
+         */
         test('POST/shadowUpdatePumpWater should emit pump_water state change to user from aws lambda', async () => {
 
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
@@ -811,6 +941,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should handle missing thingName and shadowPump.
+         * This test ensures that when required fields are missing in the request,
+         * a 400 status is returned with appropriate error messages.
+         */
         test('POST/shadowUpdatePumpWater should handle missing thingName and shadowPump', async () => {
 
             const response = await request(app)
@@ -824,6 +959,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should handle missing API key.
+         * This test verifies that if the API key is not provided in the request,
+         * a 400 status is returned with an error message indicating the invalid API key.
+         */
         test('POST/shadowUpdatePumpWater should handle missing api key', async () => {
 
             const response = await request(app)
@@ -839,6 +979,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should handle getting device from database errors.
+         * This test checks that if the device cannot be found in the database,
+         * a 500 status is returned with an appropriate error message.
+         */
         test('POST/shadowUpdatePumpWater should handle getting device from database errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(null);
 
@@ -855,6 +1000,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(emitToUser).not.toHaveBeenCalled();
         });
 
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should handle emit to user errors.
+         * This test verifies that if emitting an event to the user fails,
+         * a 500 status is returned with the corresponding error message.
+         */
         test('POST/shadowUpdatePumpWater should handle emit to user errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
 
@@ -872,6 +1022,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Emit to user failed');
         });
 
+        /**
+         * Test POST /dashboard/shadowUpdatePumpWater should handle update shadow errors.
+         * This test ensures that if updating the device shadow fails,
+         * a 500 status is returned with the appropriate error message.
+         */
         test('POST/shadowUpdatePumpWater should handle update shadow errors', async () => {
             (getDeviceThing as jest.Mock).mockResolvedValue(testDevice);
 
@@ -895,6 +1050,11 @@ describe('Dashboard Router Integration Tests', () => {
             expect(response.body.message).toBe('Failed to update device shadow.');
         });
 
+        /**
+         * Test GET /dashboard/deviceShadow should get AWS IoT device shadow when valid data is provided.
+         * This test checks that a valid request successfully retrieves the device shadow,
+         * returning a 201 status with the correct message.
+         */
         test('GET/deviceShadow should get aws iot device shadow when valid data is provided', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -923,6 +1083,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
         
+        /**
+         * Test GET /dashboard/deviceShadow should handle missing thingName.
+         * This test verifies that when the required thingName parameter is missing,
+         * a 400 status is returned with an appropriate error message.
+         */
         test('GET/deviceShadow should handle missing thingName', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
@@ -938,6 +1103,11 @@ describe('Dashboard Router Integration Tests', () => {
             });
         });
 
+        /**
+         * Test GET /dashboard/deviceShadow should handle shadow get errors.
+         * This test ensures that if an error occurs while retrieving the device shadow,
+         * a 500 status is returned with the appropriate error message.
+         */
         test('GET/deviceShadow should handle shadow get errors', async () => {
             (verifyToken as jest.Mock).mockImplementation((token, secret) => {
                 return { user_id: testUser.user_id };
