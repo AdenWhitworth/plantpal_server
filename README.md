@@ -32,13 +32,16 @@ PlantPal is an application that allows users to monitor their plants through IoT
 
 ## Technologies Used
 
-- **Node.js**: Backend runtime environment.
+- **Node.js**: Backend runtime environment for executing JavaScript on the server.
 - **Express.js**: Web framework for building the RESTful API.
-- **TypeScript**: Strongly typed language to ensure better code quality and development experience.
-- **MySQL**: SQL database to store user, plant, and device data.
-- **JWT (JSON Web Tokens)**: For secure authentication.
-- **Socket.IO**: To handle real-time communication between clients and the server.
-- **Amazon Web Service**: To handle cloud hosted SQL (AWS RDS), to handle MQTT (AWS IoT Core), and to handle event driven SQL and MQTT changes (AWS Lambda)
+- **TypeScript**: Strongly typed language that enhances code quality and development experience.
+- **MySQL**: SQL database for storing user, plant, and device data.
+- **JWT (JSON Web Tokens)**: Used for secure authentication.
+- **Socket.IO**: Library for real-time communication between clients and the server.
+- **Amazon Web Services (AWS)**: 
+  - **RDS**: For cloud-hosted SQL database management.
+  - **IoT Core**: For handling MQTT protocols.
+  - **Lambda**: For processing event-driven changes in SQL and MQTT data.
 
 ## Getting Started
 
