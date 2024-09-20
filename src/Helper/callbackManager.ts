@@ -1,11 +1,4 @@
-/**
- * Represents the response structure for socket callbacks.
- */
-export type CallbackResponse = {
-    error: boolean;
-    message?: string;
-    user_id?: number;
-};
+import { CallbackResponse } from "../Types/types";
 
 /**
  * Handles the socket callback by constructing a CallbackResponse object

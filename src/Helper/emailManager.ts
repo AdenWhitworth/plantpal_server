@@ -1,16 +1,5 @@
 import nodemailer, {SentMessageInfo} from 'nodemailer';
-
-/**
- * Interface defining the structure of the email options object.
- * This object is passed to the sendEmail function to specify the email details.
- */
-interface MailOptions {
-    from: string;
-    to: string;
-    subject: string;
-    text?: string;
-    html?: string;
-}
+import { MailOptions } from '../Types/types';
 
 /**
  * Asynchronously sends an email using the given mail options.
