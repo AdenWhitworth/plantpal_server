@@ -288,7 +288,7 @@ authRouter.post('/resetPassword', resetPasswordLimiter, validateRequest(resetPas
         const resetTokenExpiryTimestamp = new Date(user.reset_token_expiry).getTime();
 
         const isMatch = await bcrypt.compare(correctToken, user.reset_token);
-        console.log(isMatch,user.reset_token, resetTokenExpiryTimestamp);
+
         if (!isMatch || Date.now() > resetTokenExpiryTimestamp) {
             throw new CustomError('Invalid or expired token', 400);
         }
