@@ -1,4 +1,4 @@
 build:
   environment:
     NODE_ENV: development
-  command: npm install && npm run build
+  #command: npm install && npm run build
