@@ -6,7 +6,7 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "dev": "nodemon",
-    "build": "npm install typescript && npx tsc",
+    "build": "npx tsc",
     "start": "node dist/app.js",
     "type-docs": "typedoc"
   },
@@ -29,7 +29,8 @@
     "mysql2": "^3.10.2",
     "nodemailer": "^6.9.14",
     "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "typescript": "^5.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
