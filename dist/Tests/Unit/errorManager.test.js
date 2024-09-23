@@ -29,7 +29,7 @@ describe('errorHandler', () => {
         };
     });
     beforeAll(() => {
-        process.env.NODE_ENV = 'production';
+        process.env.APP_ENV = 'production';
     });
     /**
      * Test case for handling errors in production.
@@ -48,7 +48,7 @@ describe('errorHandler', () => {
      * It verifies that the correct error response is returned, including the stack trace.
      */
     it('should return the correct error response in development', () => {
-        process.env.NODE_ENV = 'development';
+        process.env.APP_ENV = 'development';
         const error = new errorManager_1.CustomError('Not Found', 404);
         (0, errorManager_1.errorHandler)(error, mockResponse);
         expect(mockResponse.status).toHaveBeenCalledWith(404);

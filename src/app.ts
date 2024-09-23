@@ -61,7 +61,7 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
     });
 });
 
-const PORT = process.env.PORT as string || "4000";
+const PORT = process.env.PORT as string || "8080";
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

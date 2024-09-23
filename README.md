@@ -113,7 +113,7 @@ Create a `.env` file in the root directory and define the following variables:
   AUTH_EMAIL_HOST=your_host_email  # Host for the email service
   
   # Environment configuration
-  NODE_ENV=production #| development  # Set to 'production' or 'development'
+  APP_ENV=production #| development  # Set to 'production' or 'development'
   ```
 
 ### Running the Backend

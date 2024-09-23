@@ -33,7 +33,7 @@ describe('errorHandler', () => {
     });
 
     beforeAll(() => {
-        process.env.NODE_ENV = 'production';
+        process.env.APP_ENV = 'production';
     });
 
     /**
@@ -55,7 +55,7 @@ describe('errorHandler', () => {
      * It verifies that the correct error response is returned, including the stack trace.
      */
     it('should return the correct error response in development', () => {
-        process.env.NODE_ENV = 'development';
+        process.env.APP_ENV = 'development';
 
         const error = new CustomError('Not Found', 404);
         errorHandler(error, mockResponse as Response);

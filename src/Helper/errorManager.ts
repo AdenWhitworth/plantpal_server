@@ -33,7 +33,7 @@ export const errorHandler = (err: CustomError, res: Response) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || 'An unexpected error occurred';
 
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.APP_ENV === 'production') {
         return res.status(statusCode).json({ message });
     }
 
