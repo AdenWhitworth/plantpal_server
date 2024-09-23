@@ -6,8 +6,8 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "dev": "nodemon",
-    "build": "npx tsc",
-    "start": "npm run build && node dist/app.js",
+    "build": "tsc",
+    "start": "node dist/app.js",
     "type-docs": "typedoc"
   },
   "keywords": [],
