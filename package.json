@@ -7,7 +7,6 @@
     "coverage": "jest --coverage",
     "dev": "nodemon",
     "build": "tsc",
-    "prestart": "npm run build",
     "start": "node dist/app.js",
     "type-docs": "typedoc"
   },
