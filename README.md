@@ -36,10 +36,12 @@ PlantPal is an application that allows users to monitor their plants through IoT
 
 - **Node.js**: Backend runtime environment for executing JavaScript on the server.
 - **Express.js**: Web framework for building the RESTful API.
-- **TypeScript**: Strongly typed language that enhances code quality and development experience.
+- **TypeScript**: A strongly typed superset of JavaScript that enhances code quality and provides better tooling and type safety during development.
 - **MySQL**: SQL database for storing user, plant, and device data.
 - **JWT (JSON Web Tokens)**: Used for secure authentication.
-- **Socket.IO**: Library for real-time communication between clients and the server.
+- **Socket.IO**: A library that facilitates real-time, bidirectional communication between clients and servers, crucial for features like live updates and notifications.
+- **Jest**: A delightful JavaScript testing framework that ensures the reliability of the application by allowing developers to write unit tests for their functions and components.
+- **TypeDoc**: A documentation generator for TypeScript projects that creates consistent and user-friendly API documentation, making it easier for developers to understand and use the codebase.
 - **Amazon Web Services (AWS)**: 
   - **RDS**: For cloud-hosted SQL database management.
   - **IoT Core**: For handling MQTT protocols.
