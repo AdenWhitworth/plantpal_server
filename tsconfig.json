@@ -10,7 +10,7 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": true
   },
   "typedocOptions": {

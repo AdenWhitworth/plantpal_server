@@ -7,7 +7,7 @@
     "coverage": "jest --coverage",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/app.js", 
+    "start": "node dist/app.js",
     "type-docs": "typedoc"
   },
   "keywords": [],
@@ -56,6 +56,6 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typedoc": "^0.26.7",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   }
 }
