@@ -1,13 +1,13 @@
 {
   "name": "plantpal_server",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "dist/app.js",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
     "dev": "nodemon",
     "build": "npx tsc",
-    "start": "node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "type-docs": "typedoc"
   },
   "keywords": [],
@@ -29,8 +29,7 @@
     "mysql2": "^3.10.2",
     "nodemailer": "^6.9.14",
     "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5",
-    "typescript": "^5.6.2"
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
