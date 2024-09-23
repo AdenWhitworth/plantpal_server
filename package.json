@@ -1,11 +1,13 @@
 {
   "name": "plantpal_server",
   "version": "1.0.0",
-  "main": "app.ts",
+  "main": "app.js",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
     "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/app.js", 
     "type-docs": "typedoc"
   },
   "keywords": [],
