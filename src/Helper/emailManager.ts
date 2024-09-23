@@ -11,11 +11,10 @@ import { MailOptions } from '../Types/types';
  */
 export async function sendEmail (mailOptions: MailOptions): Promise<SentMessageInfo>{
     // Create a transporter object to handle the email sending process.
-    // It uses the Mailtrap service (in this example) for testing purposes.
     // Authentication credentials are loaded from environment variables.
     var transporter = nodemailer.createTransport({
         host: process.env.AUTH_EMAIL_HOST as string,
-        port: 2525,
+        port: parseInt(process.env.AUTH_EMAIL_PORT as string, 10),
         auth: {
           user: process.env.AUTH_EMAIL_USERNAME as string,
           pass: process.env.AUTH_EMAIL_PASSWORD as string
