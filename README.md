@@ -8,6 +8,7 @@ Welcome to the **PlantPal Server**, the backend API for PlantPal, an application
 
 - [Overview](#overview)
 - [Features](#features)
+- [PlantPal Live Demo](#plantpal-live-demo)
 - [Technologies Used](#technologies-used)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -16,6 +17,7 @@ Welcome to the **PlantPal Server**, the backend API for PlantPal, an application
   - [Running the Backend](#running-the-backend)
 - [API Endpoints](#api-endpoints)
 - [AWS Lambda Functions](#aws-lambda-functions)
+- [Database Structure](#database-structure)
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Future Features](#future-features)
@@ -25,6 +27,19 @@ Welcome to the **PlantPal Server**, the backend API for PlantPal, an application
 ## Overview
 
 PlantPal is an application that allows users to monitor their plants through IoT devices. This repository handles the server-side logic for user authentication, device management, and plant data processing. It is built with Node.js and follows REST API principles to ensure scalability and efficiency.
+
+## PlantPal Live Demo
+
+The PlantPal application is live and can be accessed at [PlantPal Demo](https://www.plantpalhome.com/). This application integrates seamlessly with the PlantPal back-end, offering an intuitive experience for managing your plants remotely.
+
+### Test User Credentials
+
+You can explore the full functionality of the PlantPal application using the following demo account:
+
+- **Email:** support@plantpalhome.com
+- **Password:** testpassword123
+
+Please note that this test account is connected to an actual PlantPal device in my kitchen, so any interactions may affect its operation. Feel free to explore, but please be considerate of its usage!
 
 ## Features
 
@@ -43,6 +58,7 @@ PlantPal is an application that allows users to monitor their plants through IoT
 - **Socket.IO**: A library that facilitates real-time, bidirectional communication between clients and servers, crucial for features like live updates and notifications.
 - **Jest**: A delightful JavaScript testing framework that ensures the reliability of the application by allowing developers to write unit tests for their functions and components.
 - **TypeDoc**: A documentation generator for TypeScript projects that creates consistent and user-friendly API documentation, making it easier for developers to understand and use the codebase.
+- **Nodemailer**: A robust email-sending library for Node.js applications, enabling seamless integration with email services for confirming purchases and resetting passwords.
 - **Amazon Web Services (AWS)**: 
   - **RDS**: For cloud-hosted SQL database management.
   - **IoT Core**: For handling MQTT protocols.
@@ -92,6 +108,7 @@ Create a `.env` file in the root directory and define the following variables:
   
   # Frontend URL
   BASE_URL=your_frontend_url  # The base URL for your frontend application
+  BASE_URL_WWW=your_front-end_www_url  # The base www URL for your frontend application
   
   # AWS configuration
   AWS_ACCESS_KEY_ID=your_aws_access_key  # AWS access key ID
@@ -111,6 +128,7 @@ Create a `.env` file in the root directory and define the following variables:
   AUTH_EMAIL_PASSWORD=your_host_email_password  # Password for email service
   EMAIL_FROM=your_host_email_from  # Email address to send from
   AUTH_EMAIL_HOST=your_host_email  # Host for the email service
+  AUTH_EMAIL_PORT=your_host_port  # Port for the email service
   
   # Environment configuration
   APP_ENV=production #| development  # Set to 'production' or 'development'
@@ -201,6 +219,65 @@ Please refer to the [Environment Variables](#environment-variables) section for 
 ### Additional Resources
 
 - [AWS Lambda Documentation](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) for more information on AWS Lambda functions.
+
+## Database Structure
+
+The PlantPal application uses a MySQL database to store user and device information, as well as logs related to plant care. Below is an overview of the main tables in the database, including their fields and relationships.
+
+### Users Table
+
+| Field                     | Type          | Description                                       |
+|---------------------------|---------------|---------------------------------------------------|
+| `user_id`                 | `int(11)`    | Unique identifier for each user (Primary Key)    |
+| `first_name`              | `varchar(50)` | User's first name                                |
+| `last_name`               | `varchar(50)` | User's last name                                 |
+| `email`                   | `varchar(50)` | User's email address (Unique)                    |
+| `password`                | `varchar(200)`| Hashed password for authentication                |
+| `refresh_token`           | `varchar(255)`| Token for refreshing user sessions                |
+| `reset_token_expiry`      | `DATETIME`    | Expiry date for password reset tokens             |
+| `reset_token`             | `varchar(255)`| Password reset token                              |
+| `last_login`              | `DATETIME`    | Timestamp of the user's last login                |
+| `socket_id`               | `varchar(255)`| ID for managing user socket connections           |
+
+### Devices Table
+
+| Field                     | Type          | Description                                       |
+|---------------------------|---------------|---------------------------------------------------|
+| `device_id`               | `int(11)`    | Unique identifier for each device (Primary Key)    |
+| `cat_num`                 | `varchar(50)` | Foreign key linking to the `factoryDevices` table |
+| `user_id`                 | `int(11)`    | Foreign key linking to the `users` table           |
+| `wifi_ssid`               | `varchar(50)` | Wi-Fi SSID for the device                         |
+| `wifi_password`           | `TEXT`        | Wi-Fi password for the device                     |
+| `init_vec`                | `varchar(255)`| Initialization vector for encryption              |
+| `presence_connection`     | `BOOLEAN`     | Indicates device connection presence              |
+| `location`                | `varchar(50)` | Device location                                   |
+| `thing_name`              | `varchar(255)`| Foreign key linking to the `factoryDevices` table |
+
+### DeviceLogs Table
+
+| Field                     | Type          | Description                                       |
+|---------------------------|---------------|---------------------------------------------------|
+| `log_id`                  | `int(11)`    | Unique identifier for each log (Primary Key)     |
+| `cat_num`                 | `varchar(50)` | Foreign key linking to the `devices` table        |
+| `soil_temp`               | `FLOAT`       | Soil temperature reading                           |
+| `soil_cap`                | `int(11)`    | Soil moisture capacitance                             |
+| `log_date`                | `TIMESTAMP`   | Timestamp of when the log was created             |
+| `water`                   | `BOOLEAN`     | Indicates if the plant was watered                 |
+
+### FactoryDevices Table
+
+| Field                     | Type          | Description                                       |
+|---------------------------|---------------|---------------------------------------------------|
+| `factory_id`              | `int(11)`    | Unique identifier for each factory device (Primary Key) |
+| `cat_num`                 | `varchar(50)` | Catalog number for factory devices (Unique)        |
+| `factory_date`            | `DATETIME`    | Date the factory device was created               |
+| `thing_name`              | `varchar(255)`| Unique name for the factory device (Unique)       |
+
+### Relationships
+
+- The **users** table is linked to the **devices** table via `user_id`, allowing each user to have multiple devices.
+- The **devices** table connects to the **deviceLogs** table through the `cat_num`, enabling logging of multiple entries for each device.
+- The **devices** table also references the **factoryDevices** table, establishing a link between user devices and factory settings.
 
 ## Testing
 
