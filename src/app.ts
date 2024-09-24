@@ -18,7 +18,7 @@ const server = http.createServer(app);
 initSocket(server);
 
 app.use(cors({
-  origin: process.env.BASE_URL as string,
+  origin: [process.env.BASE_URL as string, process.env.BASE_URL_WWW as string],
   credentials: true,
 }));
 app.use(cookieParser());
