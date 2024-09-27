@@ -16,7 +16,7 @@ let io: Server;
 function initSocket(server: any): void {
   io = new Server(server, {
     cors: {
-      origin: [process.env.BASE_URL as string, process.env.BASE_URL_WWW as string],
+      origin: [process.env.BASE_URL as string, process.env.BASE_URL_WWW as string, process.env.LAMBDA_URL as string],
       methods: ['GET', 'POST'],
       credentials: true,
     }
