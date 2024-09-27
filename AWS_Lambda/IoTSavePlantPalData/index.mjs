@@ -4,7 +4,8 @@ const dbConfig = {
     host: process.env.RDS_HOSTNAME,
     user: process.env.RDS_USERNAME,
     password: process.env.RDS_PASSWORD,
-    database: process.env.RDS_DATABASE
+    database: process.env.RDS_DATABASE,
+    timezone: '+00:00'
 };
 
 export const handler = async (event) => {

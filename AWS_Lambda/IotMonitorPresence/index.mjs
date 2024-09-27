@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: process.env.API_URL,
   headers: {
     "x-api-key": process.env.API_KEY
   }
