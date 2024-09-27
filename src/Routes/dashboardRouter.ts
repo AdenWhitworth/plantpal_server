@@ -45,7 +45,13 @@ dashboardRouter.get('/userDevices', validateAccessToken, async (req: AccessToken
         }
 
         const devices = await getUserDevices(req.user_id);
-        successHandler("Fetch Successfully.", 200, res, undefined, devices);
+
+        const formattedDevices = devices.map((device: any) => ({
+            ...device,
+            presence_connection: !!device.presence_connection
+        }));
+
+        successHandler("Fetch Successfully.", 200, res, undefined, formattedDevices);
     } catch (error) {
         errorHandler(error as CustomError, res);
     }
@@ -268,12 +274,12 @@ dashboardRouter.post('/shadowUpdatePumpWater', validateRequest(shadowUpdatePumpW
         if (!userDevice) {
             throw new CustomError('Error finding user device.', 500);
         }
-        
-        await emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
 
         if (shadowPump) {
             await updateDeviceShadow(thingName,desiredState, reportedState);
         }
+        
+        await emitToUser(userDevice.user_id, 'shadowUpdatePumpWater', { device: userDevice, thing_name: thingName, shadow_pump: shadowPump });
         
         successHandler("Shadow pump water update received", 201, res);
     } catch (error) {
