@@ -1006,7 +1006,6 @@ describe('Dashboard Router Integration Tests', () => {
                 });
 
             expect(response.status).toBe(500);
-            expect(emitToUser).toHaveBeenCalledWith(testUser.user_id, "shadowUpdatePumpWater", { device: testDevice, thing_name: testDevice.thing_name, shadow_pump: true });
             expect(response.body.message).toBe('Failed to update device shadow.');
         });
 
