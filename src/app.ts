@@ -18,7 +18,7 @@ const server = http.createServer(app);
 initSocket(server);
 
 app.use(cors({
-  origin: [process.env.BASE_URL as string, process.env.BASE_URL_WWW as string, process.env.LAMBDA_URL_PRESCENCE as string, process.env.LAMBDA_URL_SHADOW as string],
+  origin: [process.env.BASE_URL as string, process.env.BASE_URL_WWW as string, process.env.LAMBDA_URL_PRESCENCE as string, process.env.LAMBDA_URL_SHADOW as string, process.env.TEST_BASE_URL as string],
   credentials: true,
 }));
 app.use(cookieParser());
