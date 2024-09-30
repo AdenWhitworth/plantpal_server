@@ -109,7 +109,10 @@ Create a `.env` file in the root directory and define the following variables:
   # Frontend URL
   BASE_URL=your_frontend_url  # The base URL for your frontend application
   BASE_URL_WWW=your_front-end_www_url  # The base www URL for your frontend application
-  
+  LAMBDA_URL_PRESCENCE=your_aws_prescence_lambda_url #The URL for your lambda presence function
+  LAMBDA_URL_SHADOW=your_aws_shadow_lambda_url #The URL for your lambda shadow function
+  API_URL=your_api_url #The API URL for your lambda functions to call your backend api with.
+
   # AWS configuration
   AWS_ACCESS_KEY_ID=your_aws_access_key  # AWS access key ID
   AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key  # AWS secret access key
@@ -203,6 +206,7 @@ This project includes AWS Lambda functions that enhance the functionality of the
    - Replace `YourFunctionName`, `YourIAMRoleARN`, and the file paths accordingly.
    - Add the triggers as indicated in the comments at the top of each `index.mjs` file.
    - Include the following layer for each function: `/AWS_ZIP/lambda-function-07-15-2024.zip`.
+   - Add a function URL to the `IotMonitorPresence` and `IotMonitorShadow` lambda functions for use in the API enviroment variables
 
 3. **Testing the Functions**:
    - You can test the deployed functions using the AWS Management Console or AWS CLI.
@@ -212,6 +216,7 @@ This project includes AWS Lambda functions that enhance the functionality of the
 Each of the three Lambda functions requires the following environment variable:
 
 ```text
+API_URL=your_api_url #The API URL for your lambda functions to call your backend api with.
 API_KEY=your_api_key  # Your API key for third-party services
 ```
 Please refer to the [Environment Variables](#environment-variables) section for details on how to configure them.
