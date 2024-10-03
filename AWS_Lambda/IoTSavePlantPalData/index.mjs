@@ -27,7 +27,6 @@ export const handler = async (event) => {
 
     try {
         connection = await mysql.createConnection(dbConfig);
-        console.log('Connected to the database');
         
         const { cat_num, soil_temp, soil_cap, water } = event;
 

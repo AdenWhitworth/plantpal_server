@@ -30,7 +30,6 @@ export const handler = async (event) => {
     }
 
     const isConnected = eventType === 'connected';
-    console.log(`Device ${clientId} ${isConnected ? 'connected' : 'disconnected'}.`);
 
     await updateShadowConnection(clientId, isConnected);
     
