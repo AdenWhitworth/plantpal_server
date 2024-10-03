@@ -216,8 +216,15 @@ This project includes AWS Lambda functions that enhance the functionality of the
 Each of the three Lambda functions requires the following environment variable:
 
 ```text
+# API configuration
 API_URL=your_api_url #The API URL for your lambda functions to call your backend api with.
 API_KEY=your_api_key  # Your API key for third-party services
+
+# MySQL database configuration
+RDS_DATABASE=plantpal_app  # The name of the MySQL database
+RDS_HOSTNAME=your_aws_rds_endpoint  # Your AWS RDS endpoint for cloud hosted or ip for local development
+RDS_PASSWORD=your_mysql_password  # Your MySQL password
+RDS_USERNAME=your_mysql_user  # Your MySQL username
 ```
 Please refer to the [Environment Variables](#environment-variables) section for details on how to configure them.
 
