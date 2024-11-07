@@ -32,6 +32,8 @@ PlantPal is an application that allows users to monitor their plants through IoT
 
 The PlantPal application is live and can be accessed at [PlantPal Demo](https://www.plantpalhome.com/). This application integrates seamlessly with the PlantPal back-end, offering an intuitive experience for managing your plants remotely.
 
+<img width="600" src="https://github.com/AdenWhitworth/aden_whitworth_portfolio/raw/master/src/Images/plantpal_demo.png" alt="PlantPal Demo">
+
 ### Test User Credentials
 
 You can explore the full functionality of the PlantPal application using the following demo account:
