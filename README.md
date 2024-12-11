@@ -351,8 +351,6 @@ The project uses **GitHub Actions** to automate testing, building, and deploymen
    - Generate an API token in the DigitalOcean dashboard under **API > Tokens/Keys**.  
    - Add this token to your GitHub repository's secrets as `DIGITALOCEAN_API_TOKEN` along with the app ID as `DIGITALOCEAN_APP_ID`.
 
----
-
 ### GitHub Actions Deployment
 
 #### Setup
@@ -377,7 +375,7 @@ The deployment process is triggered through the CI/CD pipeline, which performs t
 5. **Authentication with DigitalOcean**: Sets up the DigitalOcean CLI (`doctl`) and authenticates using the API token.
 6. **Deployment**: Triggers a deployment in DigitalOcean's App Platform by calling the API.
 
-The CI/CD pipeline is defined in [`.github/workflows/deploy.yml`](https://github.com/AdenWhitworth/PlantPal_Back-End/raw/master/github/workflows/deploy.yml).
+The CI/CD pipeline is defined in `.github/workflows/deploy.yml`.
 
 ## Documentation
 
