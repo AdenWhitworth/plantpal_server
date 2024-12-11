@@ -50,6 +50,7 @@ Please note that this test account is connected to an actual PlantPal device in 
 - **Device Integration**: Manage IoT devices that track plant conditions (e.g., soil moisture, temperature).
 - **Plant Management**: Add and manage plants in the system, linking them with devices for real-time monitoring.
 - **Data Analytics**: Fetch historical and real-time data from the PlantPal devices, and generate insights for plant care.
+- **Automated CI/CD Pipeline**: Ensures code quality with automated testing, builds, and deployments. Features seamless integration with GitHub Actions and DigitalOcean for backend deployment, providing a streamlined and reliable development workflow.
 
 ## Technologies Used
 
@@ -66,6 +67,8 @@ Please note that this test account is connected to an actual PlantPal device in 
   - **RDS**: For cloud-hosted SQL database management.
   - **IoT Core**: For handling MQTT protocols.
   - **Lambda**: For processing event-driven changes in SQL and MQTT data.
+- **GitHub Actions**: A robust CI/CD platform that automates workflows such as testing, building, and deploying the application. GitHub Actions ensures consistent code quality and streamlines deployments to production environments.
+- **DigitalOcean**: A scalable cloud hosting platform used for deploying and managing the backend. The project uses DigitalOcean's App Platform for hosting and integrates with the DigitalOcean API for automated deployments.
 
 ## Getting Started
 
