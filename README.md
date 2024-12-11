@@ -19,6 +19,7 @@ Welcome to the **PlantPal Server**, the backend API for PlantPal, an application
 - [AWS Lambda Functions](#aws-lambda-functions)
 - [Database Structure](#database-structure)
 - [Testing](#testing)
+- [CI/CD Pipeline](#cicd-pipeline)
 - [Documentation](#documentation)
 - [Future Features](#future-features)
 - [Contributing](#contributing)
@@ -305,6 +306,78 @@ You can view test coverage reports with:
 ```bash
 npm run coverage
 ```
+
+## CI/CD Pipeline
+
+The project uses **GitHub Actions** to automate testing, building, and deployment to **DigitalOcean**.
+
+### DigitalOcean Setup
+
+1. **DigitalOcean App Platform**:  
+   - Ensure your backend is set up on DigitalOcean's App Platform.  
+   - Note the `APP_ID` from your DigitalOcean App Platform dashboard. This ID is required for triggering deployments via the API.
+
+2. **Environment Variables**: Configure the same environment variables in DigitalOcean's App Settings as defined locally in the `.env` file. These include:
+  - `PORT`
+  - `MYSQL_USER`
+  - `MYSQL_PASSWORD`
+  - `MYSQL_DATABASE`
+  - `RDS_ENDPOINT`
+  - `cryptoSecretKey`
+  - `API_KEY`
+  - `API_CLIENT_KEY`
+  - `BASE_URL`
+  - `BASE_URL_WWW`
+  - `LAMBDA_URL_PRESCENCE`
+  - `LAMBDA_URL_SHADOW`
+  - `API_URL`
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_REGION`
+  - `AWS_IOT_ENDPOINT`
+  - `AUTH_REFRESH_TOKEN_SECRET`
+  - `AUTH_REFRESH_TOKEN_EXPIRY`
+  - `AUTH_ACCESS_TOKEN_SECRET`
+  - `AUTH_ACCESS_TOKEN_EXPIRY`
+  - `RESET_PASSWORD_TOKEN_EXPIRY_MINS`
+  - `AUTH_EMAIL_USERNAME`
+  - `AUTH_EMAIL_PASSWORD`
+  - `EMAIL_FROM`
+  - `AUTH_EMAIL_HOST`
+  - `AUTH_EMAIL_PORT`
+  - `APP_ENV`
+
+3. **DigitalOcean API Token**:  
+   - Generate an API token in the DigitalOcean dashboard under **API > Tokens/Keys**.  
+   - Add this token to your GitHub repository's secrets as `DIGITALOCEAN_API_TOKEN` along with the app ID as `DIGITALOCEAN_APP_ID`.
+
+---
+
+### GitHub Actions Deployment
+
+#### Setup
+
+Ensure that the following `env` variables are added to the GitHub repository's secrets:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_IOT_ENDPOINT`
+- `DIGITALOCEAN_API_TOKEN`
+- `DIGITALOCEAN_APP_ID`
+
+#### Pipeline
+
+The deployment process is triggered through the CI/CD pipeline, which performs the following steps:
+
+1. **Code Checkout**: Fetches the latest changes from the repository.
+2. **Dependency Installation**: Installs all required dependencies using `npm install`.
+3. **Testing**: Runs the test suite with `Jest` to validate code quality and functionality.
+4. **Build Process**: Compiles the TypeScript files into JavaScript using `npm run build`.
+5. **Authentication with DigitalOcean**: Sets up the DigitalOcean CLI (`doctl`) and authenticates using the API token.
+6. **Deployment**: Triggers a deployment in DigitalOcean's App Platform by calling the API.
+
+The CI/CD pipeline is defined in [`.github/workflows/deploy.yml`](https://github.com/AdenWhitworth/PlantPal_Back-End/raw/master/github/workflows/deploy.yml).
 
 ## Documentation
 
