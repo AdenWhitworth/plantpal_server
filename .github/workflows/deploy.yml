@@ -1,0 +1,46 @@
+name: Test and Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow on pushes to the main branch
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests
+      run: npm run test
+
+    - name: Build TypeScript
+      run: npm run build  # Ensures the TypeScript files are compiled into JavaScript
+
+    - name: Deploy to DigitalOcean
+      if: success()
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+        HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+        ssh root@$HOST << 'EOF'
+        cd /workspace
+        git pull origin main
+        npm install
+        npm run build  # Compile TypeScript on the server
+        npm start      # Start the server
+        EOF
