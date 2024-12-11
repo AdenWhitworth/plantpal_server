@@ -46,14 +46,12 @@ jobs:
         DIGITALOCEAN_API_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
       run: doctl auth init -t $DIGITALOCEAN_API_TOKEN
 
-    - name: Deploy to DigitalOcean
+    - name: Deploy to DigitalOcean App Platform
       if: success()
+      env:
+        DO_API_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
       run: |
-        # SSH into DigitalOcean server to pull the latest changes and restart the app
-        ssh root@${{ secrets.DIGITALOCEAN_HOST }} << 'EOF'
-          cd /workspace
-          git pull origin main
-          npm install
-          npm run build  # Compile TypeScript on the server
-          npm start      # Start the server if it's not already running
-        EOF
+        curl -X POST "https://api.digitalocean.com/v2/apps/${{ secrets.DIGITALOCEAN_APP_ID }}/deployments" \
+          -H "Authorization: Bearer $DO_API_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"source":{"branch":"main"}}'
