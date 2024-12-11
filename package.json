@@ -7,7 +7,7 @@
     "coverage": "jest --coverage",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "npm run test && node dist/app.js",
+    "start": "node dist/app.js",
     "type-docs": "typedoc"
   },
   "keywords": [],
