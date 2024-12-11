@@ -3,7 +3,7 @@ name: Test and Deploy to DigitalOcean
 on:
   push:
     branches:
-      - main  # Trigger this workflow on pushes to the main branch
+      - main
 
 jobs:
   test-and-deploy:
@@ -20,6 +20,9 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
+
+    - name: Ensure Jest is executable
+      run: chmod +x node_modules/.bin/jest
 
     - name: Run Tests
       run: npm run test
