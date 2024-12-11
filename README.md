@@ -35,6 +35,8 @@ The PlantPal application is live and can be accessed at [PlantPal Demo](https://
 
 <img width="600" src="https://github.com/AdenWhitworth/aden_whitworth_portfolio/raw/master/src/Images/plantpal_demo.png" alt="PlantPal Demo">
 
+<img width="600" src="https://github.com/AdenWhitworth/PlantPal_Front-End/raw/master/src/Images/PlantPal_live.jpg" alt="PlantPal Live device">
+
 ### Test User Credentials
 
 You can explore the full functionality of the PlantPal application using the following demo account:
